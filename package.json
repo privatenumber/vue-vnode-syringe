@@ -1,6 +1,6 @@
 {
   "name": "vue-vnode-syringe",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "🧬 Mutate your vNodes with vNode Syringe 💉",
   "main": "dist/vnode-syringe.js",
   "scripts": {
