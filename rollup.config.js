@@ -10,7 +10,7 @@ export default {
 		babel({
 			exclude: 'node_modules/**',
 		}),
-		// isProd && terser(),
+		isProd && terser(),
 		filesize(),
 	],
 	output: {
