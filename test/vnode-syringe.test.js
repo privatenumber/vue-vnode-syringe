@@ -148,7 +148,7 @@ describe('Native element support', () => {
 describe('Component support', () => {
 	const MultiButton = {
 		template: `
-			<div>
+			<div class="multi-button">
 				<button
 					:class="theme"
 					v-bind="$attrs"
@@ -171,6 +171,9 @@ describe('Component support', () => {
 				type: String,
 				default: 'normal',
 			},
+		},
+		mounted() {
+			this.$emit('some-event');
 		},
 	};
 
@@ -226,6 +229,7 @@ describe('Component support', () => {
 			template: `
 				<div>
 					<vnode-syringe
+						some-attr="1"
 						theme="dark"
 					>
 						<multi-button />
@@ -240,5 +244,30 @@ describe('Component support', () => {
 
 		const wrapper = mount(usage);
 		expect(wrapper.element).toMatchSnapshot();
+	});
+
+	test('Custom event', () => {
+		const onSomeEvent = jest.fn();
+		const usage = {
+			template: `
+				<div>
+					<vnode-syringe
+						@some-event="onSomeEvent"
+					>
+						<multi-button />
+					</vnode-syringe>
+				</div>
+			`,
+			components: {
+				VnodeSyringe,
+				MultiButton,
+			},
+			methods: {
+				onSomeEvent,
+			},
+		};
+
+		const wrapper = mount(usage);
+		expect(onSomeEvent).toHaveBeenCalled();
 	});
 });
