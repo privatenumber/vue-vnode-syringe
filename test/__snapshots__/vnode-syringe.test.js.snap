@@ -68,6 +68,12 @@ exports[`Foundation No usage 1`] = `
 </div>
 `;
 
+exports[`Foundation One child 1`] = `
+<div>
+  <div />
+</div>
+`;
+
 exports[`Native element support Inherit attributes 1`] = `
 <div>
   <div
