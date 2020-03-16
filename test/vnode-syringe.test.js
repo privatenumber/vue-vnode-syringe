@@ -267,7 +267,7 @@ describe('Component support', () => {
 			},
 		};
 
-		const wrapper = mount(usage);
+		mount(usage);
 		expect(onSomeEvent).toHaveBeenCalled();
 	});
 });
