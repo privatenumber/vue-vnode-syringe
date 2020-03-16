@@ -13,7 +13,7 @@ function extractPropsFromVNodeData(data, Ctor) {
 		return;
 	}
 	const res = {};
-	const { attrs, props } = data;
+	const { attrs, props = {} } = data;
 	if (isDef(attrs) || isDef(props)) {
 		for (const key in propOptions) {
 			const altKey = hyphenate(key);
@@ -47,37 +47,46 @@ function checkProp(
 	}
 	return false;
 }
+const isEmpty = obj => {
+    for (var k in obj) {
+        return false
+    }
+    return true;
+};
+
+const { assign } = Object;
 
 export default {
 	functional: true,
 	render(h, ctx) {
 		if (!ctx.children) { return undefined; }
 
-		const clonedNativeOn = { ...ctx.data.nativeOn };
-		const clonedOn = { ...ctx.data.on };
-		const clonedAttrs = { ...ctx.data.attrs };
+		const clonedNativeOn = assign({}, ctx.data.nativeOn);
+		const clonedOn = assign({}, ctx.data.on);
+		const clonedAttrs = assign({}, ctx.data.attrs);
 
-		if (!(
-			Object.keys(clonedOn).length
-			|| Object.keys(clonedAttrs).length
-			|| Object.keys(clonedNativeOn).length
-		)) {
+		if (
+			isEmpty(clonedOn)
+			&& isEmpty(clonedAttrs)
+			&& isEmpty(clonedNativeOn)
+		) {
 			return ctx.children;
 		}
 
 		return ctx.children.map((c) => {
-			const attrs = { ...clonedAttrs };
-			let on = { ...clonedOn };
+			const attrs = assign({}, clonedAttrs);
+			let on = assign({}, clonedOn);
 
 			if (c.componentOptions) {
-				const props = extractPropsFromVNodeData({ attrs, props: {} }, c.componentOptions.Ctor);
+				// Optimize props
+				const props = extractPropsFromVNodeData({ attrs }, c.componentOptions.Ctor);
 
 				if (Object.keys(props).length) {
-					c.componentOptions.propsData = Object.assign(c.componentOptions.propsData || {}, props);
+					c.componentOptions.propsData = assign(c.componentOptions.propsData || {}, props);
 				}
 
-				c.componentOptions.listeners = Object.assign(c.componentOptions.listeners || {}, on);
-				on = { ...clonedNativeOn };
+				c.componentOptions.listeners = assign(c.componentOptions.listeners || {}, on);
+				on = assign({}, clonedNativeOn);
 			}
 
 			if (!c.data) {
@@ -85,14 +94,14 @@ export default {
 			}
 
 			if (attrs) {
-				c.data.attrs = Object.assign(c.data.attrs || {}, attrs);
+				c.data.attrs = assign(c.data.attrs || {}, attrs);
 			}
 
 			if (on) {
-				c.data.on = Object.assign(c.data.on || {}, on);
+				c.data.on = assign(c.data.on || {}, on);
 			}
 
-			return h({ render: () => c });
+			return c;
 		});
 	},
 };

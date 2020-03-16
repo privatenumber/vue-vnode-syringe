@@ -2,7 +2,9 @@
 
 exports[`Component support Pass to component $attrs 1`] = `
 <div>
-  <div>
+  <div
+    class="multi-button"
+  >
     <button
       class="normal"
       title="I'm a Button"
@@ -26,9 +28,12 @@ exports[`Component support Pass to component $attrs 1`] = `
 
 exports[`Component support Pass to component props 1`] = `
 <div>
-  <div>
+  <div
+    class="multi-button"
+  >
     <button
       class="dark"
+      some-attr="1"
     >
       
 					Option 1
@@ -37,6 +42,7 @@ exports[`Component support Pass to component props 1`] = `
      
     <button
       class="dark"
+      some-attr="1"
     >
       
 					Option 2
