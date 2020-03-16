@@ -1,4 +1,5 @@
 # :syringe: vNode Syringe
+> 🧬 Mutate your vNodes with vNode Syringe 💉
 
 ## :rocket: Quick setup
 #### Install
