@@ -24,28 +24,6 @@
 	  return hasOwnProperty.call(obj, key);
 	};
 
-	function extractPropsFromVNodeData(data, Ctor) {
-	  var propOptions = Ctor.options.props;
-
-	  if (isUndef(propOptions)) {
-	    return;
-	  }
-
-	  var res = {};
-	  var attrs = data.attrs,
-	      _data$props = data.props,
-	      props = _data$props === void 0 ? {} : _data$props;
-
-	  if (isDef(attrs) || isDef(props)) {
-	    for (var key in propOptions) {
-	      var altKey = hyphenate(key);
-	      checkProp(res, props, key, altKey, true) || checkProp(res, attrs, key, altKey, false);
-	    }
-	  }
-
-	  return res;
-	}
-
 	function checkProp(res, hash, key, altKey, preserve) {
 	  if (isDef(hash)) {
 	    if (hasOwn(hash, key)) {
@@ -72,6 +50,27 @@
 	  return false;
 	}
 
+	function extractPropsFromVNodeData(data, Ctor) {
+	  var propOptions = Ctor.options.props;
+
+	  if (isUndef(propOptions)) {
+	    return;
+	  }
+
+	  var res = {};
+	  var attrs = data.attrs,
+	      _data$props = data.props,
+	      props = _data$props === void 0 ? {} : _data$props;
+
+	  if (isDef(attrs) || isDef(props)) {
+	    for (var key in propOptions) {
+	      var altKey = hyphenate(key);
+	      checkProp(res, props, key, altKey, true) || checkProp(res, attrs, key, altKey, false);
+	    }
+	  }
+
+	  return res;
+	}
 	var isEmpty = function isEmpty(obj) {
 	  for (var k in obj) {
 	    return false;
@@ -79,8 +78,8 @@
 
 	  return true;
 	};
-
 	var assign = Object.assign;
+
 	var vnodeSyringe = {
 	  functional: true,
 	  render: function render(h, ctx) {
