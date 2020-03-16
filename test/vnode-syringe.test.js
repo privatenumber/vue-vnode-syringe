@@ -39,6 +39,22 @@ describe('Foundation', () => {
 		const wrapper = mount(usage);
 		expect(wrapper.element).toMatchSnapshot();
 	});
+
+	test('One child', () => {
+		const usage = {
+			template: `
+				<div>
+					<vnode-syringe><div /></vnode-syringe>
+				</div>
+			`,
+			components: {
+				VnodeSyringe,
+			},
+		};
+
+		const wrapper = mount(usage);
+		expect(wrapper.element).toMatchSnapshot();
+	});
 });
 
 describe('Native element support', () => {
