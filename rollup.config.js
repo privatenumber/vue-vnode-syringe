@@ -9,9 +9,10 @@ export default {
 	plugins: [
 		babel({
 			exclude: 'node_modules/**',
+			runtimeHelpers: true
 		}),
 		isProd && terser(),
-		filesize(),
+		isProd && filesize(),
 	],
 	output: {
 		dir: 'dist',

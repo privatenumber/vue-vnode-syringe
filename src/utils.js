@@ -2,7 +2,6 @@ const hyphenateRE = /\B([A-Z])/g;
 const hyphenate = (str) => str.replace(hyphenateRE, '-$1').toLowerCase();
 
 const isUndef = (v) => v === undefined || v === null;
-const isDef = (v) => v !== undefined && v !== null;
 
 const { hasOwnProperty } = Object.prototype;
 const hasOwn = (obj, key) => hasOwnProperty.call(obj, key);
@@ -15,7 +14,7 @@ function checkProp(
 	altKey,
 	preserve,
 ) {
-	if (isDef(hash)) {
+	if (!isUndef(hash)) {
 		if (hasOwn(hash, key)) {
 			res[key] = hash[key];
 			if (!preserve) {
@@ -49,12 +48,5 @@ export function extractPropsFromVNodeData(attrs, Ctor) {
 	}
 	return res;
 }
-
-export const isEmpty = (obj) => {
-	for (const k in obj) {
-		return false;
-	}
-	return true;
-};
 
 export const { assign } = Object;
