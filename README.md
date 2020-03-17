@@ -1,4 +1,4 @@
-# :syringe: vNode Syringe <a href="https://packagephobia.now.sh/result?p=vue-vnode-syringe"><img src="https://packagephobia.now.sh/badge?p=vue-vnode-syringe"></a>
+# :syringe: vNode Syringe <a href="https://npm.im/vue-vnode-syringe"><img src="https://badgen.net/npm/v/vue-vnode-syringe"></a> <a href="https://npm.im/vue-vnode-syringe"><img src="https://badgen.net/npm/dm/vue-vnode-syringe"></a> <a href="https://packagephobia.now.sh/result?p=vue-vnode-syringe"><img src="https://packagephobia.now.sh/badge?p=vue-vnode-syringe"></a>
 > 🧬 Mutate your vNodes with vNode Syringe 💉
 
 ## :rocket: Quick setup
