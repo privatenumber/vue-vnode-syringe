@@ -1,6 +1,5 @@
 import {
 	assign,
-	isEmpty,
 	extractPropsFromVNodeData,
 } from './utils';
 
@@ -9,48 +8,37 @@ export default {
 	render(h, ctx) {
 		if (!ctx.children) { return undefined; }
 
-		// TODO: Add more tests to make sure I can remove cloning here
-		const clonedNativeOn = assign({}, ctx.data.nativeOn);
-		const clonedOn = assign({}, ctx.data.on);
-		const clonedAttrs = assign({}, ctx.data.attrs);
-
-		if (
-			isEmpty(clonedOn)
-			&& isEmpty(clonedAttrs)
-			&& isEmpty(clonedNativeOn)
-		) {
-			return ctx.children;
-		}
-
+		const { on, attrs } = ctx.data;
 		return ctx.children.map((c) => {
-			const attrs = assign({}, clonedAttrs);
-			let on = assign({}, clonedOn);
+			const nodeAttrs = assign({}, attrs);
+			let nodeOn = assign({}, on);
 
-			if (c.componentOptions) {
-				const props = extractPropsFromVNodeData(attrs, c.componentOptions.Ctor);
+			const { componentOptions: comOpts } = c;
+			if (comOpts) {
+				const props = extractPropsFromVNodeData(nodeAttrs, comOpts.Ctor);
 
-				if (Object.keys(props).length) {
-					c.componentOptions.propsData = assign(c.componentOptions.propsData || {}, props);
+				if (props) {
+					comOpts.propsData = assign(comOpts.propsData || {}, props);
 				}
 
 				// Logic from https://github.com/vuejs/vue/blob/v2.6.11/src/core/vdom/create-component.js#L168
-				c.componentOptions.listeners = assign(c.componentOptions.listeners || {}, on);
-				on = assign({}, clonedNativeOn);
+				comOpts.listeners = assign(comOpts.listeners || {}, nodeOn);
+				nodeOn = null;
 			}
 
 			if (!c.data) {
 				c.data = {};
 			}
 
-			if (attrs) {
-				c.data.attrs = assign(c.data.attrs || {}, attrs);
+			if (nodeAttrs) {
+				c.data.attrs = assign(c.data.attrs || {}, nodeAttrs);
 			}
 
-			if (on) {
-				c.data.on = assign(c.data.on || {}, on);
+			if (nodeOn) {
+				c.data.on = assign(c.data.on || {}, nodeOn);
 			}
 
-			return c;
+			return h({ inheritAttrs: false, render: () => c }, ctx.data);
 		});
 	},
 };
