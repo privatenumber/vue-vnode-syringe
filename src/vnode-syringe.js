@@ -10,6 +10,8 @@ export default {
 
 		const { on, attrs } = ctx.data;
 		return ctx.children.map((c) => {
+			if (!c.tag) { return c; }
+
 			const nodeAttrs = assign({}, attrs);
 			let nodeOn = assign({}, on);
 

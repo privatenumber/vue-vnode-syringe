@@ -19,6 +19,24 @@ describe('Error handling', () => {
 		expect(wrapper.isEmpty()).toBe(true);
 	});
 
+	test('No elements', () => {
+		const usage = {
+			template: `
+				<div>
+					<vnode-syringe>
+						Hello World
+					</vnode-syringe>
+				</div>
+			`,
+			components: {
+				VnodeSyringe,
+			},
+		};
+
+		const wrapper = mount(usage);
+		expect(wrapper.text()).toBe('Hello World');
+	});
+
 	test('No usage', () => {
 		const usage = {
 			template: `
