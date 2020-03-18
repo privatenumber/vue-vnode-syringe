@@ -174,13 +174,13 @@ describe('Native element support', () => {
 		expect(wrapper.attributes('d')).toBe('4');
 	});
 
-	test('Apply static style', () => {
+	test('Merge static style', () => {
 		const usage = {
 			template: `
 				<vnode-syringe
 					style="color:red"
 				>
-					<div />
+					<div style="color:blue;background:green;" />
 				</vnode-syringe>
 			`,
 			components: {
@@ -189,16 +189,21 @@ describe('Native element support', () => {
 		};
 
 		const wrapper = mount(usage);
-		expect(wrapper.attributes('style')).toBe('color: red;');
+		expect(wrapper.attributes('style')).toBe('color: red; background: green;');
 	});
 
-	test('Apply computed style', () => {
+	test('Merge computed style', () => {
 		const usage = {
 			template: `
 				<vnode-syringe
 					:style="{ color: 'blue' }"
 				>
-					<div />
+					<div
+						:style="{
+							color: 'red',
+							background: 'green',
+						}"
+					/>
 				</vnode-syringe>
 			`,
 			components: {
@@ -207,16 +212,16 @@ describe('Native element support', () => {
 		};
 
 		const wrapper = mount(usage);
-		expect(wrapper.attributes('style')).toBe('color: blue;');
+		expect(wrapper.attributes('style')).toBe('color: blue; background: green;');
 	});
 
-	test('Apply static class', () => {
+	test('Merge static classes', () => {
 		const usage = {
 			template: `
 				<vnode-syringe
-					class="static-class"
+					class="static-class-b"
 				>
-					<div />
+					<div class="static-class-a" />
 				</vnode-syringe>
 			`,
 			components: {
@@ -225,7 +230,7 @@ describe('Native element support', () => {
 		};
 
 		const wrapper = mount(usage);
-		expect(wrapper.attributes('class')).toBe('static-class');
+		expect(wrapper.attributes('class')).toBe('static-class-a static-class-b');
 	});
 
 	test('Apply computed class', () => {
@@ -299,7 +304,7 @@ describe('Native element support', () => {
 	});
 
 	describe('Reactivity', () => {
-		test('attribute', async () => {
+		test('Reactive attribute', async () => {
 			const usage = {
 				template: `
 					<vnode-syringe
@@ -327,13 +332,13 @@ describe('Native element support', () => {
 			expect(wrapper.attributes('title')).toBe('Dynamic title');
 		});
 
-		test('class', async () => {
+		test('Reactive class merging', async () => {
 			const usage = {
 				template: `
 					<vnode-syringe
 						:class="classes"
 					>
-						<div />
+						<div class="static-class" />
 					</vnode-syringe>
 				`,
 				components: {
@@ -341,7 +346,7 @@ describe('Native element support', () => {
 				},
 				data() {
 					return {
-						classes: ['static-class'],
+						classes: ['array-class'],
 					};
 				},
 				mounted() {
@@ -351,7 +356,7 @@ describe('Native element support', () => {
 
 			const wrapper = mount(usage);
 			await Vue.nextTick();
-			expect(wrapper.attributes('class')).toBe('static-class dyanamic-class');
+			expect(wrapper.attributes('class')).toBe('static-class array-class dyanamic-class');
 		});
 	});
 });
@@ -365,11 +370,14 @@ describe('Component support', () => {
 		const usage = {
 			template: `
 				<vnode-syringe
-					class="static-class"
+					class="static-class-b"
 					style="color: red"
 					title="title"
 				>
-					<child-comp />
+					<child-comp
+						class="static-class-a"
+						:class="['dynamic-class-a', { 'dynamic-class-b': true }]"
+					/>
 				</vnode-syringe>
 			`,
 			components: {
@@ -379,7 +387,7 @@ describe('Component support', () => {
 		};
 
 		const wrapper = mount(usage);
-		expect(wrapper.attributes('class')).toBe('static-class');
+		expect(wrapper.attributes('class')).toBe('static-class-a static-class-b dynamic-class-a dynamic-class-b');
 		expect(wrapper.attributes('style')).toBe('color: red;');
 		expect(wrapper.attributes('title')).toBe('title');
 	});
