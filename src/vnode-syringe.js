@@ -46,7 +46,7 @@ export default {
 				v.data.on = assign(v.data.on || {}, nodeOn);
 			}
 
-			return h(renderVnode, { ...ctx.data, props: { v } });
+			return h(renderVnode, assign({ props: { v } }, ctx.data));
 		});
 	},
 };
