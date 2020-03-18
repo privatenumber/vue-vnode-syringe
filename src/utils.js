@@ -1,8 +1,6 @@
 const hyphenateRE = /\B([A-Z])/g;
 const hyphenate = (str) => str.replace(hyphenateRE, '-$1').toLowerCase();
 
-const isUndef = (v) => v === undefined || v === null;
-
 const { hasOwnProperty } = Object.prototype;
 const hasOwn = (obj, key) => hasOwnProperty.call(obj, key);
 
@@ -14,7 +12,7 @@ function checkProp(
 	altKey,
 	preserve,
 ) {
-	if (!isUndef(hash)) {
+	if (hash) {
 		if (hasOwn(hash, key)) {
 			res[key] = hash[key];
 			if (!preserve) {
@@ -37,7 +35,7 @@ function checkProp(
 // From https://github.com/vuejs/vue/blob/v2.6.11/src/core/vdom/helpers/extract-props.js#L12
 export function extractPropsFromVNodeData(attrs, Ctor) {
 	const propOptions = Ctor.options.props;
-	if (isUndef(propOptions)) {
+	if (!propOptions) {
 		return;
 	}
 	const res = {};
