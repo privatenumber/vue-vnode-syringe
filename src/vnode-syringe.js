@@ -5,70 +5,51 @@ import {
 
 export default {
 	functional: true,
-	render(h, ctx) {
-		if (!ctx.children) { return undefined; }
+	render(h, { children, data }) {
+		if (!children) { return undefined; }
 
-		const {
-			staticStyle,
-			style,
-			class: dynamicClass,
-			staticClass,
-			attrs,
-			on,
-			nativeOn,
-		} = ctx.data;
-
-		return ctx.children.map((v) => {
+		return children.map((v) => {
 			if (!v.tag) { return v; }
 
-			const nodeAttrs = assign({}, attrs);
-			let nodeOn = assign({}, on);
-
+			const d = Object.create(data);
 			const { componentOptions: comOpts } = v;
+
 			if (comOpts) {
-				const props = extractPropsFromVNodeData(nodeAttrs, comOpts.Ctor);
+				d.attrs = assign({}, d.attrs);
+				const props = extractPropsFromVNodeData(d.attrs, comOpts.Ctor);
 
 				if (props) {
 					comOpts.propsData = assign(comOpts.propsData || {}, props);
 				}
 
 				// Logic from https://github.com/vuejs/vue/blob/v2.6.11/src/core/vdom/create-component.js#L168
-				comOpts.listeners = assign(comOpts.listeners || {}, nodeOn);
-				nodeOn = assign({}, nativeOn);
+				comOpts.listeners = assign(comOpts.listeners || {}, d.on);
+				d.on = data.nativeOn;
 			}
 
 			if (!v.data) {
 				v.data = {};
 			}
 
-			if (staticClass) {
+			if (d.staticClass) {
 				if (v.data.staticClass) {
-					v.data.staticClass += ` ${staticClass}`;
+					v.data.staticClass += ` ${d.staticClass}`;
 				} else {
-					v.data.staticClass = staticClass;
+					v.data.staticClass = d.staticClass;
 				}
 			}
 
-			if (dynamicClass) {
-				v.data.class = [v.data.class, dynamicClass];
+			if (d.class) {
+				if (v.data.class) {
+					v.data.class = [v.data.class, d.class];
+				} else {
+					v.data.class = d.class;
+				}
 			}
 
-
-			if (staticStyle) {
-				v.data.staticStyle = assign(v.data.staticStyle || {}, staticStyle);
-			}
-
-			if (style) {
-				v.data.style = assign(v.data.style || {}, style);
-			}
-
-			if (nodeAttrs) {
-				v.data.attrs = assign(v.data.attrs || {}, nodeAttrs);
-			}
-
-			if (nodeOn) {
-				v.data.on = assign(v.data.on || {}, nodeOn);
-			}
+			['staticStyle', 'style', 'attrs', 'on'].forEach((prop) => {
+				v.data[prop] = assign(v.data[prop] || {}, d[prop]);
+			});
 
 			return v;
 		});

@@ -410,6 +410,51 @@ describe('Component support', () => {
 		expect(wrapper.attributes('title')).toBe('title');
 	});
 
+	test('Apply attributes to multiple components', () => {
+		const ChildComp = {
+			props: ['data'],
+			template: '<div>{{ data }}</div>',
+		};
+
+		const usage = {
+			template: `
+				<div>
+					<vnode-syringe
+						data="some data"
+						class="static-class-b"
+						style="color: red"
+						title="title"
+					>
+						<child-comp id="a"/>
+						<child-comp
+							id="b"
+							class="static-class-a"
+							:class="['dynamic-class-a', { 'dynamic-class-b': true }]"
+						/>
+					</vnode-syringe>
+				</div>
+			`,
+			components: {
+				VnodeSyringe,
+				ChildComp,
+			},
+		};
+
+		const wrapper = mount(usage);
+
+		const a = wrapper.find('#a');
+		expect(a.text()).toBe('some data');
+		expect(a.attributes('class')).toBe('static-class-b');
+		expect(a.attributes('style')).toBe('color: red;');
+		expect(a.attributes('title')).toBe('title');
+
+		const b = wrapper.find('#b');
+		expect(b.text()).toBe('some data');
+		expect(b.attributes('class')).toBe('static-class-a static-class-b dynamic-class-a dynamic-class-b');
+		expect(b.attributes('style')).toBe('color: red;');
+		expect(b.attributes('title')).toBe('title');
+	});
+
 	test('inheritAttrs: false and v-bind="$attrs"', () => {
 		const ChildComp = {
 			inheritAttrs: false,
