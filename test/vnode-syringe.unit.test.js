@@ -63,7 +63,7 @@ describe('Error handling', () => {
 
 	test('No usage with component', () => {
 		const ChildComp = {
-			template: `<section>Child component</section>`,
+			template: '<section>Child component</section>',
 		};
 
 		const usage = {
@@ -359,7 +359,7 @@ describe('Native element support', () => {
 describe('Component support', () => {
 	test('Apply attributes to single component', () => {
 		const ChildComp = {
-			template: `<div>Child component</div>`,
+			template: '<div>Child component</div>',
 		};
 
 		const usage = {
@@ -765,7 +765,47 @@ describe('Component support', () => {
 		wrapper.find('#c').trigger('click');
 		wrapper.find('#a').trigger('click');
 		wrapper.find('#b').trigger('click');
-		
 		expect(onSomeEvent.mock.calls).toEqual([['c'], ['a'], ['b']]);
+	});
+
+	test('Shouldn\'t destroy component', async () => {
+		const beforeUpdate = jest.fn();
+		const beforeDestroy = jest.fn();
+
+		const ChildComp = {
+			props: {
+				data: String,
+			},
+			beforeUpdate,
+			beforeDestroy,
+			render(h) {
+				return h('div', [this.data]);
+			},
+		};
+
+		const usage = {
+			template: `
+				<vnode-syringe>
+					<child-comp
+						:data="data"
+					/>
+				</vnode-syringe>
+			`,
+			components: {
+				VnodeSyringe,
+				ChildComp,
+			},
+			data() {
+				return {
+					data: 'data',
+				};
+			},
+		};
+
+		const wrapper = mount(usage);
+		wrapper.setData({ data: 'shouldnt destroy' });
+		await Vue.nextTick();
+		expect(beforeUpdate).toHaveBeenCalled();
+		expect(beforeDestroy).not.toHaveBeenCalled();
 	});
 });

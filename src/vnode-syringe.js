@@ -3,19 +3,25 @@ import {
 	extractPropsFromVNodeData,
 } from './utils';
 
+const renderVnode = {
+	props: ['v'],
+	inheritAttrs: false,
+	render() { return this.v; },
+};
+
 export default {
 	functional: true,
 	render(h, ctx) {
 		if (!ctx.children) { return undefined; }
 
 		const { on, attrs } = ctx.data;
-		return ctx.children.map((c) => {
-			if (!c.tag) { return c; }
+		return ctx.children.map((v) => {
+			if (!v.tag) { return v; }
 
 			const nodeAttrs = assign({}, attrs);
 			let nodeOn = assign({}, on);
 
-			const { componentOptions: comOpts } = c;
+			const { componentOptions: comOpts } = v;
 			if (comOpts) {
 				const props = extractPropsFromVNodeData(nodeAttrs, comOpts.Ctor);
 
@@ -28,19 +34,19 @@ export default {
 				nodeOn = null;
 			}
 
-			if (!c.data) {
-				c.data = {};
+			if (!v.data) {
+				v.data = {};
 			}
 
 			if (nodeAttrs) {
-				c.data.attrs = assign(c.data.attrs || {}, nodeAttrs);
+				v.data.attrs = assign(v.data.attrs || {}, nodeAttrs);
 			}
 
 			if (nodeOn) {
-				c.data.on = assign(c.data.on || {}, nodeOn);
+				v.data.on = assign(v.data.on || {}, nodeOn);
 			}
 
-			return h({ inheritAttrs: false, render: () => c }, ctx.data);
+			return h(renderVnode, { ...ctx.data, props: { v } });
 		});
 	},
 };
