@@ -215,6 +215,24 @@ describe('Native element support', () => {
 		expect(wrapper.attributes('style')).toBe('color: blue; background: green;');
 	});
 
+	test('Apply static classes', () => {
+		const usage = {
+			template: `
+				<vnode-syringe
+					class="static-class-a"
+				>
+					<div />
+				</vnode-syringe>
+			`,
+			components: {
+				VnodeSyringe,
+			},
+		};
+
+		const wrapper = mount(usage);
+		expect(wrapper.attributes('class')).toBe('static-class-a');
+	});
+
 	test('Merge static classes', () => {
 		const usage = {
 			template: `
@@ -817,45 +835,45 @@ describe('Component support', () => {
 		expect(beforeDestroy).not.toHaveBeenCalled();
 	});
 
-	// test('Shouldn\'t create new VM instance', async () => {
-	// 	const ChildComp = {
-	// 		props: {
-	// 			data: String,
-	// 		},
-	// 		render(h) {
-	// 			return h('div', [this.data]);
-	// 		},
-	// 	};
+	test('Shouldn\'t create new VM instance', async () => {
+		const ChildComp = {
+			props: {
+				data: String,
+			},
+			render(h) {
+				return h('div', [this.data]);
+			},
+		};
 
-	// 	const usage = {
-	// 		template: `
-	// 			<div>
-	// 				<vnode-syringe>
-	// 					<child-comp
-	// 						v-for="data in items"
-	// 						ref="child"
-	// 						:data="data"
-	// 						:key="data"
-	// 					/>
-	// 				</vnode-syringe>
-	// 			</div>
-	// 		`,
-	// 		components: {
-	// 			VnodeSyringe,
-	// 			ChildComp,
-	// 		},
-	// 		data() {
-	// 			return {
-	// 				items: ['a', 'b'],
-	// 			};
-	// 		},
-	// 	};
+		const usage = {
+			template: `
+				<div>
+					<vnode-syringe>
+						<child-comp
+							v-for="data in items"
+							ref="child"
+							:data="data"
+							:key="data"
+						/>
+					</vnode-syringe>
+				</div>
+			`,
+			components: {
+				VnodeSyringe,
+				ChildComp,
+			},
+			data() {
+				return {
+					items: ['a', 'b'],
+				};
+			},
+		};
 
-	// 	const wrapper = mount(usage);
-	// 	const uids = wrapper.findAll({ ref: 'child' }).wrappers.map(w => w.vm._uid);
-	// 	wrapper.setData({ items: ['b', 'a'] });
-	// 	await Vue.nextTick();
-	// 	const newUids = wrapper.findAll({ ref: 'child' }).wrappers.map(w => w.vm._uid);
-	// 	expect(newUids).toEqual(uids);
-	// });
+		const wrapper = mount(usage);
+		const uids = wrapper.findAll({ ref: 'child' }).wrappers.map(w => w.vm._uid);
+		wrapper.setData({ items: ['b', 'a'] });
+		await Vue.nextTick();
+		const newUids = wrapper.findAll({ ref: 'child' }).wrappers.map(w => w.vm._uid);
+		expect(newUids).toEqual(uids);
+	});
 });
