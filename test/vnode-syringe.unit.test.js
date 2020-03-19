@@ -915,10 +915,10 @@ describe('Component support', () => {
 		};
 
 		const wrapper = mount(usage);
-		const uids = wrapper.findAll({ ref: 'child' }).wrappers.map(w => w.vm._uid);
+		const uids = wrapper.findAll({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
 		wrapper.setData({ items: ['b', 'a'] });
 		await Vue.nextTick();
-		const newUids = wrapper.findAll({ ref: 'child' }).wrappers.map(w => w.vm._uid);
+		const newUids = wrapper.findAll({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
 		expect(newUids).toEqual(uids);
 	});
 });

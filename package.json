@@ -8,7 +8,7 @@
     "dev-build": "rollup -cw",
     "dev": "jest --watch",
     "test": "jest",
-    "lint": "eslint {src,test}",
+    "lint": "eslint --cache .",
     "version": "npm run build && git add dist"
   },
   "repository": {

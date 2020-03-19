@@ -13,5 +13,5 @@ module.exports = {
 	moduleNameMapper: {
 		'^@/(.*)$': '<rootDir>/src/$1',
 		'vue-vnode-syringe': '<rootDir>/src/vnode-syringe',
-	}
+	},
 };
