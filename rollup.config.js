@@ -9,7 +9,7 @@ export default {
 	plugins: [
 		babel({
 			exclude: 'node_modules/**',
-			runtimeHelpers: true
+			runtimeHelpers: true,
 		}),
 		isProd && terser(),
 		isProd && filesize(),
