@@ -1,30 +1,28 @@
 import {
-	hyphenate
+	hyphenate,
 } from './utils';
 
 // from https://github.com/vuejs/vue/blob/6fe07eb/src/platforms/web/util/style.js#L5
 const parseStyleText = function (cssText) {
-	var res = {};
-	var listDelimiter = /;(?![^(]*\))/g;
-	var propertyDelimiter = /:(.+)/;
-	cssText.split(listDelimiter).forEach(function (item) {
+	const res = {};
+	const listDelimiter = /;(?![^(]*\))/g;
+	const propertyDelimiter = /:(.+)/;
+	cssText.split(listDelimiter).forEach((item) => {
 		if (item) {
-			var tmp = item.split(propertyDelimiter);
+			const tmp = item.split(propertyDelimiter);
 			tmp.length > 1 && (res[tmp[0].trim()] = tmp[1].trim());
 		}
 	});
 	return res;
 };
 
-const capitalize = str => str[0].toUpperCase() + str.slice(1);
-
-function Syringe (value, modifier) {
+function Syringe(value, modifier) {
 	this.value = value;
 	this.modifier = modifier;
 }
 
 function normalizeModifiers(obj, handlers) {
-	for (let key in obj) {
+	for (const key in obj) {
 		if (!obj.hasOwnProperty(key)) { continue; }
 
 		const modifier = key[key.length - 1];
@@ -46,7 +44,6 @@ function normalizeModifiers(obj, handlers) {
 }
 
 function set(obj, attr, { modifier, value }) {
-
 	// Overwrite
 	if (modifier === '!' || !obj.hasOwnProperty(attr)) {
 		obj[attr] = value;
@@ -89,7 +86,7 @@ function set(obj, attr, { modifier, value }) {
 }
 
 const assign = (target, obj) => {
-	for (let attr in obj) {
+	for (const attr in obj) {
 		if (obj.hasOwnProperty(attr)) {
 			set(target, attr, obj[attr]);
 		}
@@ -134,13 +131,13 @@ export default {
 			if (comOpts) {
 				if (d.attrs) {
 					// Why clone? -- test with multiple children
-					d.attrs = Object.assign({}, d.attrs);
+					d.attrs = { ...d.attrs };
 
 					const propOptions = comOpts.Ctor.options.props;
 					if (propOptions) {
 						for (const prop in propOptions) {
 							[prop, hyphenate(prop)].some((propp) => {
-								for (let key in d.attrs) {
+								for (const key in d.attrs) {
 									if (d.attrs.hasOwnProperty(key) && key === propp) {
 										set(comOpts.propsData, prop, d.attrs[key]);
 										delete d.attrs[key];

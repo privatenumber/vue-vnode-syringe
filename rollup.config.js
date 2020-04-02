@@ -7,10 +7,7 @@ const isProd = process.env.NODE_ENV === 'production';
 export default {
 	input: 'src/vnode-syringe.js',
 	plugins: [
-		babel({
-			exclude: 'node_modules/**',
-			runtimeHelpers: true,
-		}),
+		babel(),
 		isProd && terser(),
 		isProd && filesize(),
 	],
