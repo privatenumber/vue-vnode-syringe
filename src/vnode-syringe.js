@@ -6,14 +6,17 @@ import {
 	Syringe,
 	parseStyleText,
 	normalizeModifiers,
+	classStyleProps,
 } from './utils';
+
+const classStyles = Object.values(classStyleProps);
 
 export default {
 	functional: true,
 	render(h, { children, data }) {
 		if (!children) { return undefined; }
 
-		['staticClass', 'class', 'staticStyle', 'style'].forEach((prop) => {
+		classStyles.forEach((prop) => {
 			if (data[prop]) {
 				data[prop] = new Syringe(data[prop]);
 			}
@@ -21,15 +24,15 @@ export default {
 
 		normalizeModifiers(data.attrs, {
 			style(value, modifier) {
-				let prop = 'style';
+				let prop = classStyleProps.M_style;
 				if (typeof value === 'string') {
-					prop = 'staticStyle';
+					prop = classStyleProps.M_staticStyle;
 					value = parseStyleText(value);
 				}
 				data[prop] = new Syringe(value, modifier);
 			},
 			class(value, modifier) {
-				const prop = typeof value === 'string' ? 'staticClass' : 'class';
+				const prop = typeof value === 'string' ? classStyleProps.M_staticClass : classStyleProps.M_class;
 				data[prop] = new Syringe(value, modifier);
 			},
 		});
@@ -62,21 +65,23 @@ export default {
 
 				// Logic from https://github.com/vuejs/vue/blob/v2.6.11/src/core/vdom/create-component.js#L168
 				comOpts.listeners = assign(comOpts.listeners || {}, d.on);
-				d.on = d.nativeOn;
+				d.on = undefined;
 			}
 
 			if (!vnode.data) {
 				vnode.data = {};
 			}
 
-			['staticClass', 'class', 'staticStyle', 'style'].forEach((prop) => {
+			classStyles.forEach((prop) => {
 				if (d[prop]) {
 					set(vnode.data, prop, d[prop]);
 				}
 			});
 
 			['attrs', 'on'].forEach((prop) => {
-				vnode.data[prop] = assign(vnode.data[prop] || {}, d[prop]);
+				if (d[prop]) {
+					vnode.data[prop] = assign(vnode.data[prop] || {}, d[prop]);
+				}
 			});
 
 			return vnode;

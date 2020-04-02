@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rollup -c --environment NODE_ENV:production",
     "dev-build": "rollup -cw",
-    "dev": "jest --watch",
+    "dev": "jest --watchAll",
     "test": "jest",
     "lint": "eslint --cache .",
     "version": "npm run build && git add dist"
@@ -44,9 +44,7 @@
     "rollup-plugin-filesize": "^6.2.1",
     "rollup-plugin-terser": "^5.3.0",
     "vue": "^2.6.11",
-    "vue-template-compiler": "^2.6.11"
-  },
-  "dependencies": {
+    "vue-template-compiler": "^2.6.11",
     "core-js": "^3.6.4"
   }
 }
