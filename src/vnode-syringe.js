@@ -67,7 +67,7 @@ function set(obj, attr, { modifier, value }) {
 
 		if (Array.isArray(base)) {
 			if (Array.isArray(value)) {
-				base.push(...value);
+				base.push.apply(base, value);
 			} else {
 				base.push(value);
 			}
