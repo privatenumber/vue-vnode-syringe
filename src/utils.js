@@ -1,8 +1,19 @@
 const hyphenateRE = /\B([A-Z])/g;
-const hyphenate = (str) => str.replace(hyphenateRE, '-$1').toLowerCase();
+export const hyphenate = (str) => str.replace(hyphenateRE, '-$1').toLowerCase();
 
 const { hasOwnProperty } = Object.prototype;
 const hasOwn = (obj, key) => hasOwnProperty.call(obj, key);
+
+function move(res, hash, key, preserve) {
+	if (!hash || !hasOwn(hash, key)) {
+		return false;
+	}
+	res[key] = hash[key];
+	if (!preserve) {
+		delete hash[key];
+	}
+	return true;
+}
 
 // From https://github.com/vuejs/vue/blob/v2.6.11/src/core/vdom/helpers/extract-props.js#L52
 function checkProp(
@@ -12,24 +23,8 @@ function checkProp(
 	altKey,
 	preserve,
 ) {
-	if (hash) {
-		if (hasOwn(hash, key)) {
-			res[key] = hash[key];
-			if (!preserve) {
-				delete hash[key];
-			}
-			return true;
-		}
-
-		if (hasOwn(hash, altKey)) {
-			res[key] = hash[altKey];
-			if (!preserve) {
-				delete hash[altKey];
-			}
-			return true;
-		}
-	}
-	return false;
+	if (!hash) { return false; }
+	return move(res, hash, key, preserve) || move(res, hash, altKey, preserve);
 }
 
 // From https://github.com/vuejs/vue/blob/v2.6.11/src/core/vdom/helpers/extract-props.js#L12
@@ -39,10 +34,9 @@ export function extractPropsFromVNodeData(attrs, Ctor) {
 		return;
 	}
 	const res = {};
-	const props = {};
 	for (const key in propOptions) {
 		const altKey = hyphenate(key);
-		checkProp(res, props, key, altKey, true) || checkProp(res, attrs, key, altKey, false);
+		checkProp(res, attrs, key, altKey, false);
 	}
 	return res;
 }
