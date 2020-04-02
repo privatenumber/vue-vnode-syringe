@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import VnodeSyringe from 'vue-vnode-syringe';
-import Vue from 'vue';
 
 describe('Error handling', () => {
 	test('No children', () => {
@@ -876,7 +875,7 @@ describe('Component support', () => {
 			`,
 			components: {
 				VnodeSyringe,
-				ChildComp
+				ChildComp,
 			},
 		};
 
@@ -905,7 +904,7 @@ describe('Component support', () => {
 			`,
 			components: {
 				VnodeSyringe,
-				ChildComp
+				ChildComp,
 			},
 		};
 
@@ -1284,7 +1283,7 @@ describe('Component support', () => {
 				`,
 				components: {
 					VnodeSyringe,
-					ChildComp
+					ChildComp,
 				},
 			};
 
@@ -1378,7 +1377,6 @@ describe('Component support', () => {
 	});
 
 	describe('Merge modifier', () => {
-
 		test('Attributes', () => {
 			const ChildComp = {
 				template: '<div>Child component</div>',
@@ -1490,7 +1488,7 @@ describe('Component support', () => {
 				`,
 				components: {
 					VnodeSyringe,
-					ChildComp
+					ChildComp,
 				},
 			};
 
@@ -1584,7 +1582,6 @@ describe('Component support', () => {
 	});
 
 	describe('Overwrite modifier', () => {
-
 		test('Attributes', () => {
 			const ChildComp = {
 				template: '<div>Child component</div>',
@@ -1773,7 +1770,7 @@ describe('Component support', () => {
 				`,
 				components: {
 					VnodeSyringe,
-					ChildComp
+					ChildComp,
 				},
 			};
 

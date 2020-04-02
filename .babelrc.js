@@ -5,6 +5,8 @@ module.exports = {
 		['@babel/preset-env', isTest ? {
 			useBuiltIns: 'usage',
 			corejs: 3,
-		}: {}]
+		}: {
+			loose: true
+		}]
 	],
 };
