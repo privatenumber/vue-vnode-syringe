@@ -1388,13 +1388,13 @@ describe('Component support', () => {
 				template: `
 					<vnode-syringe
 						a&="1"
-						b&="2"
-						c&="3"
+						:b&="[2,3,4]"
+						:c&="3"
 					>
 						<child-comp
 							a="3"
-							b="1"
-							c="2"
+							:b="[1]"
+							:c="[2]"
 							d="4"
 						/>
 					</vnode-syringe>
@@ -1407,24 +1407,26 @@ describe('Component support', () => {
 
 			const wrapper = mount(usage);
 			expect(wrapper.attributes('a')).toBe('3');
-			expect(wrapper.attributes('b')).toBe('1');
-			expect(wrapper.attributes('c')).toBe('2');
+			expect(wrapper.attributes('b')).toBe('1,2,3,4');
+			expect(wrapper.attributes('c')).toBe('2,3');
 			expect(wrapper.attributes('d')).toBe('4');
 		});
 
 		test('Props', () => {
 			const ChildComp = {
-				props: ['text'],
-				template: '<div>{{ text }}</div>',
+				props: ['text', 'obj'],
+				template: '<div>{{ text }} - {{ JSON.stringify(obj) }}</div>',
 			};
 
 			const usage = {
 				template: `
 					<vnode-syringe
 						text&="goodbye world"
+						:obj&="{ a: 1 }"
 					>
 						<child-comp
 							text="hello world"
+							:obj="{ c: 1 }"
 						/>
 					</vnode-syringe>
 				`,
@@ -1435,7 +1437,7 @@ describe('Component support', () => {
 			};
 
 			const wrapper = mount(usage);
-			expect(wrapper.text()).toBe('hello world');
+			expect(wrapper.text()).toBe('hello world - {"c":1,"a":1}');
 		});
 
 		test('Static style', () => {

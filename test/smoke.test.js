@@ -51,7 +51,7 @@ describe('Modifiers', () => {
 		};
 
 		const wrapper = mount(usage);
-		console.log(wrapper.html())
+		expect(wrapper.html()).toBe('<div some-attr="3" another-attr="1" another-prop="2" class="static-c" style="color: blue;">Child component</div>');
 	});
 
 	test('Styles', () => {
@@ -102,6 +102,6 @@ describe('Modifiers', () => {
 		};
 
 		const wrapper = mount(usage);
-		console.log(wrapper.html())
+		expect(wrapper.html()).toBe('<div some-attr="c" another-attr="1" class="computed-c" style="color: blue;">Child component</div>');
 	});
 });
