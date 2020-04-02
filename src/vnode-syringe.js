@@ -1,98 +1,12 @@
 import {
 	hyphenate,
+	hasOwn,
+	assign,
+	set,
+	Syringe,
+	parseStyleText,
+	normalizeModifiers,
 } from './utils';
-
-// from https://github.com/vuejs/vue/blob/6fe07eb/src/platforms/web/util/style.js#L5
-const parseStyleText = function (cssText) {
-	const res = {};
-	const listDelimiter = /;(?![^(]*\))/g;
-	const propertyDelimiter = /:(.+)/;
-	cssText.split(listDelimiter).forEach((item) => {
-		if (item) {
-			const tmp = item.split(propertyDelimiter);
-			tmp.length > 1 && (res[tmp[0].trim()] = tmp[1].trim());
-		}
-	});
-	return res;
-};
-
-function Syringe(value, modifier) {
-	this.value = value;
-	this.modifier = modifier;
-}
-
-function normalizeModifiers(obj, handlers) {
-	for (const key in obj) {
-		if (!obj.hasOwnProperty(key)) { continue; }
-
-		const modifier = key[key.length - 1];
-		if (modifier === '&' || modifier === '!') {
-			const strippedKey = key.slice(0, -1);
-
-			const handler = handlers && handlers[strippedKey];
-			if (handler) {
-				handler(obj[key], modifier);
-			} else {
-				obj[strippedKey] = new Syringe(obj[key], modifier);
-			}
-
-			delete obj[key];
-		} else {
-			obj[key] = new Syringe(obj[key]);
-		}
-	}
-}
-
-function set(obj, attr, { modifier, value }) {
-	// Overwrite
-	if (modifier === '!' || !obj.hasOwnProperty(attr)) {
-		obj[attr] = value;
-		return;
-	}
-
-	const base = obj[attr];
-	if (modifier === '&' && base) {
-		if (attr === 'class') {
-			obj[attr] = [base, value];
-			return;
-		}
-
-		if (attr === 'staticClass') {
-			obj[attr] += ` ${value}`;
-			return;
-		}
-
-		if (Array.isArray(base)) {
-			if (Array.isArray(value)) {
-				base.push.apply(base, value);
-			} else {
-				base.push(value);
-			}
-			return;
-		}
-
-		if (typeof base === 'object') {
-			Object.assign(base, value);
-			return;
-		}
-
-		if (typeof base === 'function' && typeof value === 'function') {
-			obj[attr] = function () {
-				base.apply(this, arguments);
-				value.apply(this, arguments);
-			};
-		}
-	}
-}
-
-const assign = (target, obj) => {
-	for (const attr in obj) {
-		if (obj.hasOwnProperty(attr)) {
-			set(target, attr, obj[attr]);
-		}
-	}
-	return target;
-};
 
 export default {
 	functional: true,
@@ -131,14 +45,14 @@ export default {
 			if (comOpts) {
 				if (d.attrs) {
 					// Why clone? -- test with multiple children
-					d.attrs = { ...d.attrs };
+					d.attrs = Object.assign({}, d.attrs);
 
 					const propOptions = comOpts.Ctor.options.props;
 					if (propOptions) {
 						for (const prop in propOptions) {
 							[prop, hyphenate(prop)].some((propp) => {
 								for (const key in d.attrs) {
-									if (d.attrs.hasOwnProperty(key) && key === propp) {
+									if (hasOwn(d.attrs, key) && key === propp) {
 										set(comOpts.propsData, prop, d.attrs[key]);
 										delete d.attrs[key];
 										return true;
