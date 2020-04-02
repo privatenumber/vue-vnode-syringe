@@ -1,3 +1,15 @@
+export const classStyleProps = {
+	M_staticClass: 'staticClass',
+	M_class: 'class',
+	M_staticStyle: 'staticStyle',
+	M_style: 'style',
+};
+
+export function Syringe(value, modifier) {
+	this.M_value = value;
+	this.M_modifier = modifier;
+};
+
 const hyphenateRE = /\B([A-Z])/g;
 export const hyphenate = (str) => str.replace(hyphenateRE, '-$1').toLowerCase();
 
@@ -17,11 +29,6 @@ export const parseStyleText = (cssText) => {
 	});
 	return res;
 };
-
-export function Syringe(value, modifier) {
-	this.value = value;
-	this.modifier = modifier;
-}
 
 export function normalizeModifiers(obj, handlers) {
 	for (const key in obj) {
@@ -45,43 +52,43 @@ export function normalizeModifiers(obj, handlers) {
 	}
 }
 
-export const set = (obj, attr, { modifier, value }) => {
+export const set = (obj, attr, { M_modifier, M_value }) => {
 	// Overwrite
-	if (modifier === '!' || !hasOwn(obj, attr)) {
-		obj[attr] = value;
+	if (M_modifier === '!' || !hasOwn(obj, attr)) {
+		obj[attr] = M_value;
 		return;
 	}
 
 	const base = obj[attr];
-	if (modifier === '&' && base) {
-		if (attr === 'class') {
-			obj[attr] = [base, value];
+	if (M_modifier === '&' && base) {
+		if (attr === classStyleProps.M_class) {
+			obj[attr] = [base, M_value];
 			return;
 		}
 
-		if (attr === 'staticClass') {
-			obj[attr] += ` ${value}`;
+		if (attr === classStyleProps.M_staticClass) {
+			obj[attr] += ` ${M_value}`;
 			return;
 		}
 
 		if (Array.isArray(base)) {
-			if (Array.isArray(value)) {
-				base.push.apply(base, value);
+			if (Array.isArray(M_value)) {
+				base.push.apply(base, M_value);
 			} else {
-				base.push(value);
+				base.push(M_value);
 			}
 			return;
 		}
 
 		if (typeof base === 'object') {
-			Object.assign(base, value);
+			Object.assign(base, M_value);
 			return;
 		}
 
-		if (typeof base === 'function' && typeof value === 'function') {
+		if (typeof base === 'function' && typeof M_value === 'function') {
 			obj[attr] = function () {
 				base.apply(this, arguments);
-				value.apply(this, arguments);
+				M_value.apply(this, arguments);
 			};
 		}
 	}

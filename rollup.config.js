@@ -8,7 +8,13 @@ export default {
 	input: 'src/vnode-syringe.js',
 	plugins: [
 		babel(),
-		isProd && terser(),
+		isProd && terser({
+			mangle: {
+				properties: {
+					regex: /^M_/,
+				},
+			},
+		}),
 		isProd && filesize(),
 	],
 	output: {
