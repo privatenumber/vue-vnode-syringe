@@ -43,23 +43,20 @@ export default {
 			const { componentOptions: comOpts } = vnode;
 
 			if (comOpts) {
-				if (d.attrs) {
-					// Why clone? -- test with multiple children
+				const propOptions = comOpts.Ctor.options.props;
+				if (propOptions) {
 					d.attrs = Object.assign({}, d.attrs);
 
-					const propOptions = comOpts.Ctor.options.props;
-					if (propOptions) {
-						for (const prop in propOptions) {
-							[prop, hyphenate(prop)].some((propp) => {
-								for (const key in d.attrs) {
-									if (hasOwn(d.attrs, key) && key === propp) {
-										set(comOpts.propsData, prop, d.attrs[key]);
-										delete d.attrs[key];
-										return true;
-									}
+					for (const prop in propOptions) {
+						[prop, hyphenate(prop)].some((propp) => {
+							for (const key in d.attrs) {
+								if (hasOwn(d.attrs, key) && key === propp) {
+									set(comOpts.propsData, prop, d.attrs[key]);
+									delete d.attrs[key];
+									return true;
 								}
-							});
-						}
+							}
+						});
 					}
 				}
 
