@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import VnodeSyringe from 'vue-vnode-syringe';
-import Vue from 'vue';
 
 describe('Error handling', () => {
 	test('No children', () => {
@@ -146,187 +145,185 @@ describe('Native element support', () => {
 		expect(c.length).toBe(3);
 	});
 
-	test('Overwrites attributes', () => {
-		const usage = {
-			template: `
-				<vnode-syringe
-					a="1"
-					b="2"
-					c="3"
-				>
-					<div
-						a="3"
-						b="1"
-						c="2"
-						d="4"
-					/>
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-		};
-
-		const wrapper = mount(usage);
-		expect(wrapper.attributes('a')).toBe('1');
-		expect(wrapper.attributes('b')).toBe('2');
-		expect(wrapper.attributes('c')).toBe('3');
-		expect(wrapper.attributes('d')).toBe('4');
-	});
-
-	test('Merge static style', () => {
-		const usage = {
-			template: `
-				<vnode-syringe
-					style="color:red"
-				>
-					<div style="color:blue;background:green;" />
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-		};
-
-		const wrapper = mount(usage);
-		expect(wrapper.attributes('style')).toBe('color: red; background: green;');
-	});
-
-	test('Merge computed style', () => {
-		const usage = {
-			template: `
-				<vnode-syringe
-					:style="{ color: 'blue' }"
-				>
-					<div
-						:style="{
-							color: 'red',
-							background: 'green',
-						}"
-					/>
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-		};
-
-		const wrapper = mount(usage);
-		expect(wrapper.attributes('style')).toBe('color: blue; background: green;');
-	});
-
-	test('Apply static classes', () => {
-		const usage = {
-			template: `
-				<vnode-syringe
-					class="static-class-a"
-				>
-					<div />
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-		};
-
-		const wrapper = mount(usage);
-		expect(wrapper.attributes('class')).toBe('static-class-a');
-	});
-
-	test('Merge static classes', () => {
-		const usage = {
-			template: `
-				<vnode-syringe
-					class="static-class-b"
-				>
-					<div class="static-class-a" />
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-		};
-
-		const wrapper = mount(usage);
-		expect(wrapper.attributes('class')).toBe('static-class-a static-class-b');
-	});
-
-	test('Apply computed class', () => {
-		const usage = {
-			template: `
-				<vnode-syringe
-					:class="['computed-class', { objClass: true }]"
-				>
-					<div />
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-		};
-
-		const wrapper = mount(usage);
-		expect(wrapper.attributes('class')).toBe('computed-class objClass');
-	});
-
-
-	test('Inherit event listeners', () => {
-		const onClick = jest.fn();
-		const usage = {
-			template: `
-				<vnode-syringe
-					@click="onClick"
-				>
-					<span />
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-			methods: {
-				onClick,
-			},
-		};
-
-		const wrapper = mount(usage);
-		wrapper.trigger('click');
-		expect(onClick).toHaveBeenCalled();
-	});
-
-	test('Overwrites event listeners', () => {
-		const onClick = jest.fn();
-		const dontClick = jest.fn();
-		const usage = {
-			template: `
-				<vnode-syringe
-					@click="onClick"
-				>
-					<span
-						@click="dontClick"
-					/>
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-			methods: {
-				onClick,
-				dontClick,
-			},
-		};
-
-		const wrapper = mount(usage);
-		wrapper.trigger('click');
-		expect(dontClick).not.toHaveBeenCalled();
-		expect(onClick).toHaveBeenCalled();
-	});
-
-	describe('Reactivity', () => {
-		test('Reactive attribute', async () => {
+	describe('Doesn\'t overwrite', () => {
+		test('Attributes', () => {
 			const usage = {
 				template: `
 					<vnode-syringe
-						:title="title"
+						a="1"
+						b="2"
+						c="3"
+					>
+						<div
+							a="3"
+							b="1"
+							c="2"
+							d="4"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('a')).toBe('3');
+			expect(wrapper.attributes('b')).toBe('1');
+			expect(wrapper.attributes('c')).toBe('2');
+			expect(wrapper.attributes('d')).toBe('4');
+		});
+
+		test('Static style', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						style="color: blue; border: 1px solid red"
+					>
+						<div
+							style="color: red; background: blue"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: red; background: blue;');
+		});
+
+		test('Computed style', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:style="{
+							color: 'blue',
+							border: '1px solid red',
+						}"
+					>
+						<div
+							:style="{
+								color: 'red',
+								background: 'blue',
+							}"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: red; background: blue;');
+		});
+
+
+		test('Static class', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						class="class-a"
+					>
+						<div
+							class="class-b"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-b');
+		});
+
+
+		test('Computed class', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:class="['class-a']"
+					>
+						<div
+							:class="['class-b']"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-b');
+		});
+
+		test('Event listeners', () => {
+			const onClick = jest.fn();
+			const dontClick = jest.fn();
+			const usage = {
+				template: `
+					<vnode-syringe
+						@click="dontClick"
+					>
+						<span
+							@click="onClick"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+				methods: {
+					onClick,
+					dontClick,
+				},
+			};
+
+			const wrapper = mount(usage);
+			wrapper.trigger('click');
+			expect(dontClick).not.toHaveBeenCalled();
+			expect(onClick).toHaveBeenCalled();
+		});
+	});
+
+	describe('Merge modifier', () => {
+		test('Attributes', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						a&="1"
+						b&="2"
+						c="3"
+					>
+						<div
+							a="3"
+							:b="[1]"
+							d="4"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('a')).toBe('3');
+			expect(wrapper.attributes('b')).toBe('1,2');
+			expect(wrapper.attributes('c')).toBe('3');
+			expect(wrapper.attributes('d')).toBe('4');
+		});
+
+		test('Static style - no base', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						style&="color: blue; border: 1px solid red"
 					>
 						<div />
 					</vnode-syringe>
@@ -334,53 +331,451 @@ describe('Native element support', () => {
 				components: {
 					VnodeSyringe,
 				},
-				data() {
-					return {
-						title: 'Static title',
-					};
-				},
-				mounted() {
-					this.title = 'Dynamic title';
-				},
 			};
 
 			const wrapper = mount(usage);
-			expect(wrapper.attributes('title')).toBe('Static title');
-			await Vue.nextTick();
-			expect(wrapper.attributes('title')).toBe('Dynamic title');
+			expect(wrapper.attributes('style')).toBe('color: blue; border: 1px solid red;');
 		});
 
-		test('Reactive class merging', async () => {
+		test('Static style', () => {
 			const usage = {
 				template: `
 					<vnode-syringe
-						:class="classes"
+						style&="color: blue; border: 1px solid red"
 					>
-						<div class="static-class" />
+						<div
+							style="color: red; background: blue"
+						/>
 					</vnode-syringe>
 				`,
 				components: {
 					VnodeSyringe,
 				},
-				data() {
-					return {
-						classes: ['array-class'],
-					};
-				},
-				mounted() {
-					this.classes.push('dyanamic-class');
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; background: blue; border: 1px solid red;');
+		});
+
+		test('Computed style - no base', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:style&="{
+							color: 'blue',
+							border: '1px solid red',
+						}"
+					>
+						<div />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
 				},
 			};
 
 			const wrapper = mount(usage);
-			await Vue.nextTick();
-			expect(wrapper.attributes('class')).toBe('static-class array-class dyanamic-class');
+			expect(wrapper.attributes('style')).toBe('color: blue; border: 1px solid red;');
+		});
+
+		test('Computed style', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:style&="{
+							color: 'blue',
+							border: '1px solid red',
+						}"
+					>
+						<div
+							:style="{
+								color: 'red',
+								background: 'blue',
+							}"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; background: blue; border: 1px solid red;');
+		});
+
+		test('Static class - no base', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						class&="class-a"
+					>
+						<div />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-a');
+		});
+
+		test('Static class', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						class&="class-a"
+					>
+						<div
+							class="class-b"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-b class-a');
+		});
+
+		test('Computed class - no base', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:class&="{ 'class-a': true }"
+					>
+						<div />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-a');
+		});
+
+		test('Computed class', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:class&="{ 'class-a': true }"
+					>
+						<div
+							:class="['class-b']"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-b class-a');
+		});
+
+		test('Event listeners - no base', () => {
+			const onClick = jest.fn();
+			const usage = {
+				template: `
+					<vnode-syringe
+						@click&="onClick"
+					>
+						<span />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+				methods: {
+					onClick,
+				},
+			};
+
+			const wrapper = mount(usage);
+			wrapper.trigger('click');
+			expect(onClick).toHaveBeenCalled();
+		});
+
+		test('Event listeners', () => {
+			const onClick = jest.fn();
+			const dontClick = jest.fn();
+			const usage = {
+				template: `
+					<vnode-syringe
+						@click&="dontClick"
+					>
+						<span
+							@click="onClick"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+				methods: {
+					onClick,
+					dontClick,
+				},
+			};
+
+			const wrapper = mount(usage);
+			wrapper.trigger('click');
+			expect(dontClick).toHaveBeenCalled();
+			expect(onClick).toHaveBeenCalled();
+		});
+	});
+
+	describe('Overwrite modifier', () => {
+		test('Attributes', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						a!="1"
+						b!="2"
+						c!="3"
+					>
+						<div
+							a="3"
+							:b="[1]"
+							d="4"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('a')).toBe('1');
+			expect(wrapper.attributes('b')).toBe('2');
+			expect(wrapper.attributes('c')).toBe('3');
+			expect(wrapper.attributes('d')).toBe('4');
+		});
+
+		test('Static style - no base', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						style!="color: blue; border: 1px solid red"
+					>
+						<div />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; border: 1px solid red;');
+		});
+
+		test('Static style', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						style!="color: blue; border: 1px solid red"
+					>
+						<div
+							style="color: red; background: blue"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; border: 1px solid red;');
+		});
+
+		test('Computed style - no base', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:style!="{
+							color: 'blue',
+							border: '1px solid red',
+						}"
+					>
+						<div />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; border: 1px solid red;');
+		});
+
+		test('Computed style', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:style!="{
+							color: 'blue',
+							border: '1px solid red',
+						}"
+					>
+						<div
+							:style="{
+								color: 'red',
+								background: 'blue',
+							}"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; border: 1px solid red;');
+		});
+
+		test('Static class - no base', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						class!="class-a"
+					>
+						<div />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-a');
+		});
+
+		test('Static class', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						class!="class-a"
+					>
+						<div
+							class="class-b"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-a');
+		});
+
+		test('Computed class - no base', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:class!="{ 'class-a': true }"
+					>
+						<div />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-a');
+		});
+
+		test('Computed class', () => {
+			const usage = {
+				template: `
+					<vnode-syringe
+						:class!="{ 'class-a': true }"
+					>
+						<div
+							:class="['class-b']"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-a');
+		});
+
+		test('Event listeners - no base', () => {
+			const onClick = jest.fn();
+			const usage = {
+				template: `
+					<vnode-syringe
+						@click!="onClick"
+					>
+						<span />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+				methods: {
+					onClick,
+				},
+			};
+
+			const wrapper = mount(usage);
+			wrapper.trigger('click');
+			expect(onClick).toHaveBeenCalled();
+		});
+
+		test('Event listeners', () => {
+			const onClick = jest.fn();
+			const dontClick = jest.fn();
+			const usage = {
+				template: `
+					<vnode-syringe
+						@click!="onClick"
+					>
+						<span
+							@click="dontClick"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+				methods: {
+					onClick,
+					dontClick,
+				},
+			};
+
+			const wrapper = mount(usage);
+			wrapper.trigger('click');
+			expect(dontClick).not.toHaveBeenCalled();
+			expect(onClick).toHaveBeenCalled();
 		});
 	});
 });
 
 describe('Component support', () => {
-	test('Apply attributes to single component', () => {
+	test('Apply attributes to single child', () => {
 		const ChildComp = {
 			template: '<div>Child component</div>',
 		};
@@ -388,14 +783,11 @@ describe('Component support', () => {
 		const usage = {
 			template: `
 				<vnode-syringe
-					class="static-class-b"
-					style="color: red"
-					title="title"
+					a="1"
+					b="2"
+					c="3"
 				>
-					<child-comp
-						class="static-class-a"
-						:class="['dynamic-class-a', { 'dynamic-class-b': true }]"
-					/>
+					<child-comp />
 				</vnode-syringe>
 			`,
 			components: {
@@ -405,32 +797,79 @@ describe('Component support', () => {
 		};
 
 		const wrapper = mount(usage);
-		expect(wrapper.attributes('class')).toBe('static-class-a static-class-b dynamic-class-a dynamic-class-b');
-		expect(wrapper.attributes('style')).toBe('color: red;');
-		expect(wrapper.attributes('title')).toBe('title');
+		expect(wrapper.attributes('a')).toBe('1');
+		expect(wrapper.attributes('b')).toBe('2');
+		expect(wrapper.attributes('c')).toBe('3');
 	});
 
-	test('Apply attributes to multiple components', () => {
+	test('Applies class & style', () => {
 		const ChildComp = {
-			props: ['data'],
-			template: '<div>{{ data }}</div>',
+			template: '<div>Child component</div>',
+		};
+
+		const usage = {
+			template: `
+				<vnode-syringe
+					class="class-a"
+					style="color: red"
+				>
+					<child-comp />
+				</vnode-syringe>
+			`,
+			components: {
+				VnodeSyringe,
+				ChildComp,
+			},
+		};
+
+		const wrapper = mount(usage);
+		expect(wrapper.attributes('class')).toBe('class-a');
+		expect(wrapper.attributes('style')).toBe('color: red;');
+	});
+
+	test('Applies computed class & style', () => {
+		const ChildComp = {
+			template: '<div>Child component</div>',
+		};
+
+		const usage = {
+			template: `
+				<vnode-syringe
+					:class="{ 'class-a': true }"
+					:style="{
+						color: 'red'
+					}"
+				>
+					<child-comp />
+				</vnode-syringe>
+			`,
+			components: {
+				VnodeSyringe,
+				ChildComp,
+			},
+		};
+
+		const wrapper = mount(usage);
+		expect(wrapper.attributes('class')).toBe('class-a');
+		expect(wrapper.attributes('style')).toBe('color: red;');
+	});
+
+	test('Apply attributes to multiple children', () => {
+		const ChildComp = {
+			template: '<div>Child component</div>',
 		};
 
 		const usage = {
 			template: `
 				<div>
 					<vnode-syringe
-						data="some data"
-						class="static-class-b"
-						style="color: red"
-						title="title"
+						a="1"
+						b="2"
+						c="3"
 					>
-						<child-comp id="a"/>
-						<child-comp
-							id="b"
-							class="static-class-a"
-							:class="['dynamic-class-a', { 'dynamic-class-b': true }]"
-						/>
+						<child-comp />
+						<child-comp />
+						<child-comp />
 					</vnode-syringe>
 				</div>
 			`,
@@ -442,17 +881,35 @@ describe('Component support', () => {
 
 		const wrapper = mount(usage);
 
-		const a = wrapper.find('#a');
-		expect(a.text()).toBe('some data');
-		expect(a.attributes('class')).toBe('static-class-b');
-		expect(a.attributes('style')).toBe('color: red;');
-		expect(a.attributes('title')).toBe('title');
+		const a = wrapper.findAll('[a="1"]');
+		expect(a.length).toBe(3);
 
-		const b = wrapper.find('#b');
-		expect(b.text()).toBe('some data');
-		expect(b.attributes('class')).toBe('static-class-a static-class-b dynamic-class-a dynamic-class-b');
-		expect(b.attributes('style')).toBe('color: red;');
-		expect(b.attributes('title')).toBe('title');
+		const b = wrapper.findAll('[b="2"]');
+		expect(b.length).toBe(3);
+
+		const c = wrapper.findAll('[c="3"]');
+		expect(c.length).toBe(3);
+	});
+
+	test('No attributes ', () => {
+		const ChildComp = {
+			template: '<div>Child component</div>',
+		};
+
+		const usage = {
+			template: `
+				<vnode-syringe>
+					<child-comp />
+				</vnode-syringe>
+			`,
+			components: {
+				VnodeSyringe,
+				ChildComp,
+			},
+		};
+
+		const wrapper = mount(usage);
+		expect(wrapper.html()).toBe('<div>Child component</div>');
 	});
 
 	test('inheritAttrs: false and v-bind="$attrs"', () => {
@@ -527,235 +984,6 @@ describe('Component support', () => {
 		expect(dontClick).not.toHaveBeenCalled();
 	});
 
-
-	test('Inherit event listeners', () => {
-		const onClick = jest.fn();
-
-		const ChildComp = {
-			props: ['id'],
-			template: `
-				<div>
-					<span :id="id" v-on="$listeners"></span>
-				</div>
-			`,
-		};
-
-		const usage = {
-			template: `
-				<div>
-					<vnode-syringe
-						@click="onClick"
-					>
-						<child-comp id="a" />
-						<child-comp id="b" />
-					</vnode-syringe>
-				</div>
-			`,
-			components: {
-				VnodeSyringe,
-				ChildComp,
-			},
-			methods: {
-				onClick,
-			},
-		};
-
-		const wrapper = mount(usage);
-		wrapper.find('#a').trigger('click');
-		wrapper.find('#b').trigger('click');
-		expect(onClick.mock.calls.length).toBe(2);
-	});
-
-	test('Inherit native event listeners', () => {
-		const onClick = jest.fn();
-
-		const ChildComp = {
-			template: `
-				<section>
-					<span v-on="$listeners"></span>
-				</section>
-			`,
-		};
-
-		const usage = {
-			template: `
-				<div>
-					<vnode-syringe
-						@click.native="onClick"
-					>
-						<child-comp id="a" />
-						<child-comp id="b" />
-					</vnode-syringe>
-				</div>
-			`,
-			components: {
-				VnodeSyringe,
-				ChildComp,
-			},
-			methods: {
-				onClick,
-			},
-		};
-
-		const wrapper = mount(usage);
-		wrapper.find('#a').trigger('click');
-		wrapper.find('#b').trigger('click');
-		expect(onClick.mock.calls.length).toBe(2);
-	});
-
-	test('Inherit mixed event listeners', () => {
-		const onClick = jest.fn();
-		const onHover = jest.fn();
-
-		const ChildComp = {
-			template: `
-				<section>
-					<span v-on="$listeners"></span>
-				</section>
-			`,
-		};
-
-		const usage = {
-			template: `
-				<vnode-syringe
-					@hover="onHover"
-					@click.native="onClick"
-				>
-					<child-comp />
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-				ChildComp,
-			},
-			methods: {
-				onClick,
-				onHover,
-			},
-		};
-
-		const wrapper = mount(usage);
-		wrapper.find('section').trigger('click');
-		wrapper.find('span').trigger('hover');
-		expect(onClick).toHaveBeenCalled();
-		expect(onHover).toHaveBeenCalled();
-	});
-
-	test('Overwrites event listeners', () => {
-		const onClick = jest.fn();
-		const dontClick = jest.fn();
-
-		const ChildComp = {
-			template: `
-				<section>
-					<span v-on="$listeners"></span>
-				</section>
-			`,
-		};
-
-		const usage = {
-			template: `
-				<vnode-syringe
-					@click="onClick"
-				>
-					<child-comp @click="dontClick"/>
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-				ChildComp,
-			},
-			methods: {
-				onClick,
-				dontClick,
-			},
-		};
-
-		const wrapper = mount(usage);
-		wrapper.find('span').trigger('click');
-		expect(onClick).toHaveBeenCalled();
-		expect(dontClick).not.toHaveBeenCalled();
-	});
-
-	test('Pass in props', () => {
-		const ChildComp = {
-			inheritAttrs: false,
-			props: {
-				showArticle: Boolean,
-			},
-			template: `
-				<section>
-					<article
-						v-if="showArticle"
-						v-bind="$attrs"
-					/>
-				</section>
-			`,
-		};
-
-		const usage = {
-			template: `
-				<vnode-syringe
-					show-article
-					title="title"
-				>
-					<child-comp />
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-				ChildComp,
-			},
-		};
-
-		const wrapper = mount(usage);
-		const article = wrapper.find('article');
-		expect(article.exists()).toBe(true);
-		expect(article.attributes('title')).toBe('title');
-	});
-
-	test('Prop overwrite', () => {
-		const ChildComp = {
-			props: {
-				showArticle: Boolean,
-				showNav: Boolean,
-			},
-			template: `
-				<section>
-					<article
-						v-if="showArticle"
-					/>
-					<nav
-						v-if="showNav"
-					/>
-				</section>
-			`,
-		};
-
-		const usage = {
-			template: `
-				<vnode-syringe
-					:show-article="false"
-					title="title"
-				>
-					<child-comp
-						show-article
-						show-nav
-					/>
-				</vnode-syringe>
-			`,
-			components: {
-				VnodeSyringe,
-				ChildComp,
-			},
-		};
-
-		const wrapper = mount(usage);
-		expect(wrapper.find('article').exists()).toBe(false);
-		expect(wrapper.find('nav').exists()).toBe(true);
-		expect(wrapper.attributes('title')).toBe('title');
-	});
-
 	test('Reactive props', async () => {
 		const ChildComp = {
 			props: {
@@ -790,7 +1018,7 @@ describe('Component support', () => {
 
 		const wrapper = mount(usage);
 		expect(wrapper.attributes('title')).toBe('static string');
-		await Vue.nextTick();
+		await wrapper.vm.$nextTick();
 		expect(wrapper.attributes('title')).toBe('reactive string');
 	});
 
@@ -802,12 +1030,10 @@ describe('Component support', () => {
 				id: String,
 			},
 			template: `
-				<div>
-					<span
-						:id="id"
-						@click="$emit('some-event', id)"
-					/>
-				</div>
+				<span
+					:id="id"
+					@click="$emit('some-event', id)"
+				/>
 			`,
 		};
 
@@ -875,7 +1101,7 @@ describe('Component support', () => {
 
 		const wrapper = mount(usage);
 		wrapper.setData({ data: 'shouldnt destroy' });
-		await Vue.nextTick();
+		await wrapper.vm.$nextTick();
 		expect(beforeUpdate).toHaveBeenCalled();
 		expect(beforeDestroy).not.toHaveBeenCalled();
 	});
@@ -917,8 +1143,759 @@ describe('Component support', () => {
 		const wrapper = mount(usage);
 		const uids = wrapper.findAll({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
 		wrapper.setData({ items: ['b', 'a'] });
-		await Vue.nextTick();
+		await wrapper.vm.$nextTick();
 		const newUids = wrapper.findAll({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
 		expect(newUids).toEqual(uids);
+	});
+
+	describe('Doesn\'t overwrite', () => {
+		test('Attributes', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						a="1"
+						b="2"
+						c="3"
+					>
+						<child-comp
+							a="3"
+							b="1"
+							c="2"
+							d="4"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('a')).toBe('3');
+			expect(wrapper.attributes('b')).toBe('1');
+			expect(wrapper.attributes('c')).toBe('2');
+			expect(wrapper.attributes('d')).toBe('4');
+		});
+
+		test('Props', () => {
+			const ChildComp = {
+				props: ['text'],
+				template: '<div>{{ text }}</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						text="goodbye world"
+					>
+						<child-comp
+							text="hello world"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.text()).toBe('hello world');
+		});
+
+		test('Computed props', () => {
+			const ChildComp = {
+				props: ['text'],
+				template: '<div>{{ text }}</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						:text="'goodbye world'"
+					>
+						<child-comp
+							:text="'hello world'"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.text()).toBe('hello world');
+		});
+
+		test('Static style', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						style="color: blue; border: 1px solid red"
+					>
+						<child-comp
+							style="color: red; background: blue"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: red; background: blue;');
+		});
+
+		test('Computed style', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						style="background: green"
+						:style="{
+							color: 'blue',
+							border: '1px solid red',
+						}"
+					>
+						<child-comp
+							:style="{
+								color: 'red',
+								background: 'blue',
+							}"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('background: blue; color: red;');
+		});
+
+		test('Static class', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						class="class-a"
+					>
+						<child-comp
+							class="class-b"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-b');
+		});
+
+		test('Computed class', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						class="class-c"
+						:class="['class-a']"
+					>
+						<child-comp
+							:class="['class-b']"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-c class-b');
+		});
+
+		test('Event listeners', () => {
+			const ChildComp = {
+				template: '<div v-on="$listeners">Child component</div>',
+			};
+
+			const onClick = jest.fn();
+			const dontClick = jest.fn();
+			const usage = {
+				template: `
+					<vnode-syringe
+						@click="dontClick"
+					>
+						<child-comp
+							@click="onClick"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+				methods: {
+					onClick,
+					dontClick,
+				},
+			};
+
+			const wrapper = mount(usage);
+			wrapper.trigger('click');
+			expect(dontClick).not.toHaveBeenCalled();
+			expect(onClick).toHaveBeenCalled();
+		});
+	});
+
+	describe('Merge modifier', () => {
+		test('Attributes', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						a&="1"
+						:b&="[2,3,4]"
+						:c&="3"
+					>
+						<child-comp
+							a="3"
+							:b="[1]"
+							:c="[2]"
+							d="4"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('a')).toBe('3');
+			expect(wrapper.attributes('b')).toBe('1,2,3,4');
+			expect(wrapper.attributes('c')).toBe('2,3');
+			expect(wrapper.attributes('d')).toBe('4');
+		});
+
+		test('Props', () => {
+			const ChildComp = {
+				props: ['text', 'obj'],
+				template: '<div>{{ text }} - {{ JSON.stringify(obj) }}</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						text&="goodbye world"
+						:obj&="{ a: 1 }"
+					>
+						<child-comp
+							text="hello world"
+							:obj="{ c: 1 }"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.text()).toBe('hello world - {"c":1,"a":1}');
+		});
+
+		test('Static style', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						style&="color: blue; border: 1px solid red"
+					>
+						<child-comp
+							style="color: red; background: blue"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; background: blue; border: 1px solid red;');
+		});
+
+		test('Computed style', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				// Colliding prop name, gets ignored by the vue-template-compile
+				template: `
+					<vnode-syringe
+						style&="width: 100px"
+						:style&="{
+							color: 'blue',
+							border: '1px solid red',
+						}"
+					>
+						<child-comp
+							:style="{
+								color: 'red',
+								background: 'blue',
+							}"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; background: blue; border: 1px solid red;');
+		});
+
+		test('Static class', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						class&="class-a"
+					>
+						<child-comp
+							class="class-b"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-b class-a');
+		});
+
+
+		test('Computed class', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						:class&="['class-a']"
+					>
+						<child-comp
+							:class="['class-b']"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-b class-a');
+		});
+
+		test('Event listeners', () => {
+			const ChildComp = {
+				template: '<div v-on="$listeners">Child component</div>',
+			};
+
+			const onClick = jest.fn();
+			const dontClick = jest.fn();
+			const usage = {
+				template: `
+					<vnode-syringe
+						@click&="dontClick"
+					>
+						<child-comp
+							@click="onClick"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+				methods: {
+					onClick,
+					dontClick,
+				},
+			};
+
+			const wrapper = mount(usage);
+			wrapper.trigger('click');
+			expect(dontClick).toHaveBeenCalled();
+			expect(onClick).toHaveBeenCalled();
+		});
+	});
+
+	describe('Overwrite modifier', () => {
+		test('Attributes', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						a!="1"
+						b!="2"
+						c!="3"
+					>
+						<child-comp
+							a="3"
+							b="1"
+							c="2"
+							d="4"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('a')).toBe('1');
+			expect(wrapper.attributes('b')).toBe('2');
+			expect(wrapper.attributes('c')).toBe('3');
+			expect(wrapper.attributes('d')).toBe('4');
+		});
+
+		test('Props', () => {
+			const ChildComp = {
+				props: ['text', 'camelCase'],
+				template: '<div>{{ text.join() }}-{{ camelCase.join() }}</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						:text!="[1, 2, 3]"
+						:camel-case!="[2]"
+					>
+						<child-comp
+							:text="[3, 2, 1]"
+							:camel-case="[1, 2, 3]"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.text()).toBe('1,2,3-2');
+		});
+
+		test('Props casing: camelCase onto kebab-case', () => {
+			const ChildComp = {
+				props: ['helloWorld'],
+				template: '<div>{{ helloWorld.join() }}</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						:helloWorld!="[2]"
+					>
+						<child-comp
+							:hello-world="[1, 2, 3]"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.text()).toBe('2');
+		});
+
+		test('Props casing: kebab-case onto camelCase', () => {
+			const ChildComp = {
+				props: ['helloWorld'],
+				template: '<div>{{ helloWorld.join() }}</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						:hello-world!="[2]"
+					>
+						<child-comp
+							:helloWorld="[1, 2, 3]"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.text()).toBe('2');
+		});
+
+		test('Props casing: kebab-case & camelCase onto camelCase', () => {
+			const ChildComp = {
+				props: ['helloWorld'],
+				template: '<div>{{ helloWorld.join() }}</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						:hello-world!="[2]"
+						:helloWorld!="[3]"
+					>
+						<child-comp
+							:helloWorld="[1, 2, 3]"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.html()).toBe('<div hello-world="2">3</div>');
+		});
+
+		test('Static style', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						style!="color: blue; border: 1px solid red"
+					>
+						<child-comp
+							style="color: red; background: blue"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; border: 1px solid red;');
+		});
+
+		test('Computed style', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						:style!="{
+							color: 'blue',
+							border: '1px solid red',
+						}"
+					>
+						<child-comp
+							:style="{
+								color: 'red',
+								background: 'blue',
+							}"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('style')).toBe('color: blue; border: 1px solid red;');
+		});
+
+		test('Static class', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						class!="class-a"
+					>
+						<child-comp
+							class="class-b"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-a');
+		});
+
+		test('Computed class', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+			};
+
+			const usage = {
+				template: `
+					<vnode-syringe
+						:class!="['class-a']"
+					>
+						<child-comp
+							:class="['class-b']"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+			};
+
+			const wrapper = mount(usage);
+			expect(wrapper.attributes('class')).toBe('class-a');
+		});
+
+		test('Event listeners', () => {
+			const ChildComp = {
+				template: '<div v-on="$listeners">Child component</div>',
+			};
+
+			const onClick = jest.fn();
+			const dontClick = jest.fn();
+			const usage = {
+				template: `
+					<vnode-syringe
+						@click!="onClick"
+					>
+						<child-comp
+							@click="dontClick"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+				methods: {
+					onClick,
+					dontClick,
+				},
+			};
+
+			const wrapper = mount(usage);
+			wrapper.trigger('click');
+			expect(dontClick).not.toHaveBeenCalled();
+			expect(onClick).toHaveBeenCalled();
+		});
+
+		// Limitation with native event listeners
+		// test('Native event listeners', () => {
+		// 	const ChildComp = {
+		// 		template: '<div>Child component</div>',
+		// 		mounted() {
+		// 			this.$emit('click');
+		// 		},
+		// 	};
+
+		// 	const onClick = jest.fn();
+		// 	const dontClick = jest.fn();
+		// 	const usage = {
+		// 		template: `
+		// 			<vnode-syringe
+		// 				@click!.native="onClick"
+		// 			>
+		// 				<child-comp
+		// 					@click.native="dontClick"
+		// 				/>
+		// 			</vnode-syringe>
+		// 		`,
+		// 		components: {
+		// 			VnodeSyringe,
+		// 			ChildComp,
+		// 		},
+		// 		methods: {
+		// 			onClick,
+		// 			dontClick,
+		// 		},
+		// 	};
+
+		// 	const wrapper = mount(usage);
+		// 	wrapper.trigger('click');
+		// 	expect(dontClick).not.toHaveBeenCalled();
+		// 	expect(onClick).toHaveBeenCalled();
+		// });
 	});
 });
