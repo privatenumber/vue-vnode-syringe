@@ -32,11 +32,11 @@ _ButtonGroup.vue_
 ```html
 <template>
 	<div class="button-group">
-	    <vnode-syringe
-	        class="button-group__button"
-	    >
-	        <slot />
-	    </vnode-syringe>
+		<vnode-syringe
+			class="button-group__button"
+		>
+			<slot />
+		</vnode-syringe>
 	</div>
 </template>
 
@@ -55,22 +55,26 @@ _Usage.vue_
 </button-group>
 ```
 
-### Demo 2: Merging and Overwriting classes
+### Demo 2: Merging and Overwriting classes [![JSFiddle Demo]](https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue)](https://jsfiddle.net/hirokiosame/461yq0om/)
 By default, vNode Syringe only adds the attribute/event-listener if it doesn't already exist. To merge with or overwrite the existing one, use the  `&` (merge) or `!` (overwrite) suffix.
 
 _ButtonGroup.vue_
 ```html
 <template>
 	<div class="button-group">
-	    <vnode-syringe
-	    	<!-- Merge with existing class -->
-	        class&="button-group__button"
+		<vnode-syringe
 
-	        <!-- Force all buttons to inherit "disabled"-->
-	        :disabled!="disabled"
-	    >
-	        <slot />
-	    </vnode-syringe>
+			<!-- Merge with existing class -->
+			class&="button-group__button"
+
+			<!-- Force all buttons to have type="button" -->
+			type!="button"
+
+			<!-- Only gets added if child doesn't specify `disabled` -->
+			:disabled="disabled"
+		>
+			<slot />
+		</vnode-syringe>
 	</div>
 </template>
 
@@ -90,17 +94,26 @@ export default {
 
 _Usage.vue_
 ```html
-<button-group>
-	 <!-- Will render with the `button button-group__button` class -->
+<button-group disabled>
 	<button
+
+		 <!-- Renders as `button button-group__button` -->
 		class="button"
+
+		<!-- Will be overwritten to type="button" -->
+		type="submit"
+
+		<!-- Will be inherit parent's disabled state -->
 	>
 		Button 1
 	</button>
 
 	<button
+		 <!-- Renders as `button button-group__button` -->
 		class="button"
-		:disabled="false" <!-- Overwritten by parent's `disabled` state -->
+
+		<!-- Won't inherit parent's disabled state -->
+		:disabled="false"
 	>
 		Button 2
 	</button>
@@ -114,13 +127,13 @@ _ButtonGroup.vue_
 ```html
 <template>
 	<div class="button-group">
-	    <vnode-syringe
-	        class="button-group__button"
-	    >
-	        <subslot
-	            element="button"
-	        />
-	    </vnode-syringe>
+		<vnode-syringe
+			class="button-group__button"
+		>
+			<subslot
+				element="button"
+			/>
+		</vnode-syringe>
 	</div>
 </template>
 ```
