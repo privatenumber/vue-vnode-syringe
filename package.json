@@ -2,6 +2,16 @@
   "name": "vue-vnode-syringe",
   "version": "2.0.0",
   "description": "🧬 Mutate your vNodes with vNode Syringe 💉",
+  "keywords": [
+    "vue",
+    "vnode",
+    "mutate",
+    "modify",
+    "overwrite"
+  ],
+  "files": [
+    "dist"
+  ],
   "main": "dist/vnode-syringe.js",
   "scripts": {
     "build": "rollup -c --environment NODE_ENV:production",
@@ -26,9 +36,6 @@
       "pre-commit": "npm test"
     }
   },
-  "files": [
-    "dist"
-  ],
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.9.5",
