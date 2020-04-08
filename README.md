@@ -25,7 +25,7 @@ Have you ever wanted to add classes or event-listeners on content passed into a 
 
 Just wrap the `<slot>` element with vNode Syringe, and start adding attributes to it and they will be inherited by every immediate element resolved by the slot.
 
-### Demo 1: Passing down attributes
+### Demo 1: Passing down attributes [![JSFiddle Demo](https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue)](https://jsfiddle.net/hirokiosame/k4wyuq9o/)
 In this demo, the `class="button-group__button"` attribute is passed down to all of its `<slot>` content.
 
 _ButtonGroup.vue_
@@ -55,7 +55,7 @@ _Usage.vue_
 </button-group>
 ```
 
-### Demo 2: Merging and Overwriting classes [![JSFiddle Demo]](https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue)](https://jsfiddle.net/hirokiosame/461yq0om/)
+### Demo 2: Merging and Overwriting classes [![JSFiddle Demo](https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue)](https://jsfiddle.net/hirokiosame/9qpygc8w/)
 By default, vNode Syringe only adds the attribute/event-listener if it doesn't already exist. To merge with or overwrite the existing one, use the  `&` (merge) or `!` (overwrite) suffix.
 
 _ButtonGroup.vue_
