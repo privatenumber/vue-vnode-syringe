@@ -1,6 +1,6 @@
 {
   "name": "vue-vnode-syringe",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "🧬 Mutate your vNodes with vNode Syringe 💉",
   "keywords": [
     "vue",
