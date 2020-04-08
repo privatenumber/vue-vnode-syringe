@@ -1,16 +1,6 @@
 # :syringe: vNode Syringe <a href="https://npm.im/vue-vnode-syringe"><img src="https://badgen.net/npm/v/vue-vnode-syringe"></a> <a href="https://npm.im/vue-vnode-syringe"><img src="https://badgen.net/npm/dm/vue-vnode-syringe"></a> <a href="https://packagephobia.now.sh/result?p=vue-vnode-syringe"><img src="https://packagephobia.now.sh/badge?p=vue-vnode-syringe"></a>
 > 🧬 Mutate your vNodes with vNode Syringe 💉
 
-
-- If the attribute or event listener already exists, it will not be overwritten
-  - `.merge` modifier to merge
-  - `.overwrite` modifier to overwrite
-
-- classes will be merged with `&`
-- styles will be merged (even static styles)
-- Attributes will be added but not be overwritten unless `!` is used
-- merge event listners?
-
 ## :rocket: Quick setup
 #### Install
 ```sh
@@ -65,7 +55,59 @@ _Usage.vue_
 </button-group>
 ```
 
-### Demo 2: Passing down attributes to specific elements
+### Demo 2: Merging and Overwriting classes
+By default, vNode Syringe only adds the attribute/event-listener if it doesn't already exist. To merge with or overwrite the existing one, use the  `&` (merge) or `!` (overwrite) suffix.
+
+_ButtonGroup.vue_
+```html
+<template>
+	<div class="button-group">
+	    <vnode-syringe
+	    	<!-- Merge with existing class -->
+	        class&="button-group__button"
+
+	        <!-- Force all buttons to inherit "disabled"-->
+	        :disabled!="disabled"
+	    >
+	        <slot />
+	    </vnode-syringe>
+	</div>
+</template>
+
+<script>
+export default {
+	props: {
+		disabled: Boolean
+	}
+};
+</script>
+
+<style scoped>
+.button-group { ... }
+.button-group__button { ... }
+</style>
+```
+
+_Usage.vue_
+```html
+<button-group>
+	 <!-- Will render with the `button button-group__button` class -->
+	<button
+		class="button"
+	>
+		Button 1
+	</button>
+
+	<button
+		class="button"
+		:disabled="false" <!-- Overwritten by parent's `disabled` state -->
+	>
+		Button 2
+	</button>
+</button-group>
+```
+
+### Demo 3: Passing down attributes to specific elements
 But what if the user passes in a non-button element? Combining it with [Subslot](https://github.com/privatenumber/vue-subslot), we can filter out what we want from the slot and apply it specifically to the `<button>` element.
 
 _ButtonGroup.vue_
