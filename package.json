@@ -46,7 +46,7 @@
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.1",
     "husky": "^4.2.3",
-    "jest": "^25.3.0",
+    "jest": "^26.3.0",
     "rollup": "^2.3.4",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-filesize": "^7.0.0",
