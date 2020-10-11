@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import {mount} from '@vue/test-utils';
 import VnodeSyringe from 'vue-vnode-syringe';
 
 describe('Modifiers', () => {

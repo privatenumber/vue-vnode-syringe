@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import {mount} from '@vue/test-utils';
 import VnodeSyringe from 'vue-vnode-syringe';
 
 describe('Error handling', () => {
@@ -52,8 +52,8 @@ describe('Error handling', () => {
 		const spans = wrapper.findAll('span');
 		expect(spans.length).toBe(3);
 		expect(spans.at(0).attributes()).toEqual({});
-		expect(spans.at(1).attributes()).toEqual({ title: 'test' });
-		expect(spans.at(2).attributes()).toEqual({ class: 'class' });
+		expect(spans.at(1).attributes()).toEqual({title: 'test'});
+		expect(spans.at(2).attributes()).toEqual({class: 'class'});
 	});
 
 	test('No usage with component', () => {
@@ -81,8 +81,8 @@ describe('Error handling', () => {
 		const comps = wrapper.findAll('section');
 		expect(comps.length).toBe(3);
 		expect(comps.at(0).attributes()).toEqual({});
-		expect(comps.at(1).attributes()).toEqual({ title: 'test' });
-		expect(comps.at(2).attributes()).toEqual({ class: 'class' });
+		expect(comps.at(1).attributes()).toEqual({title: 'test'});
+		expect(comps.at(2).attributes()).toEqual({class: 'class'});
 	});
 });
 
@@ -216,7 +216,6 @@ describe('Native element support', () => {
 			expect(wrapper.attributes('style')).toBe('color: red; background: blue;');
 		});
 
-
 		test('Static class', () => {
 			const usage = {
 				template: `
@@ -236,7 +235,6 @@ describe('Native element support', () => {
 			const wrapper = mount(usage);
 			expect(wrapper.attributes('class')).toBe('class-b');
 		});
-
 
 		test('Computed class', () => {
 			const usage = {
@@ -1096,7 +1094,7 @@ describe('Component support', () => {
 		};
 
 		const wrapper = mount(usage);
-		wrapper.setData({ data: 'shouldnt destroy' });
+		wrapper.setData({data: 'shouldnt destroy'});
 		await wrapper.vm.$nextTick();
 		expect(beforeUpdate).toHaveBeenCalled();
 		expect(beforeDestroy).not.toHaveBeenCalled();
@@ -1137,10 +1135,10 @@ describe('Component support', () => {
 		};
 
 		const wrapper = mount(usage);
-		const uids = wrapper.findAllComponents({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
-		wrapper.setData({ items: ['b', 'a'] });
+		const uids = wrapper.findAllComponents({ref: 'child'}).wrappers.map(w => w.vm._uid);
+		wrapper.setData({items: ['b', 'a']});
 		await wrapper.vm.$nextTick();
-		const newUids = wrapper.findAllComponents({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
+		const newUids = wrapper.findAllComponents({ref: 'child'}).wrappers.map(w => w.vm._uid);
 		expect(newUids).toEqual(uids);
 	});
 
@@ -1516,7 +1514,6 @@ describe('Component support', () => {
 			const wrapper = mount(usage);
 			expect(wrapper.attributes('class')).toBe('class-b class-a');
 		});
-
 
 		test('Computed class', () => {
 			const ChildComp = {
