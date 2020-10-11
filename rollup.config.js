@@ -17,11 +17,18 @@ const rollupConfig = {
 		}),
 		isProd && filesize(),
 	],
-	output: {
-		dir: 'dist',
-		format: 'umd',
-		name: 'VnodeSyringe',
-	},
+	output: [
+		{
+			format: 'umd',
+			file: 'dist/vnode-syringe.js',
+			name: 'VnodeSyringe',
+			exports: 'default',
+		},
+		{
+			format: 'es',
+			file: 'dist/vnode-syringe.esm.js',
+		},
+	],
 };
 
 export default rollupConfig;

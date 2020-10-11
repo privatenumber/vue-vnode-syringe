@@ -20,6 +20,7 @@
     "dist"
   ],
   "main": "dist/vnode-syringe.js",
+  "module": "dist/vnode-syringe.esm.js",
   "scripts": {
     "build": "rollup -c --environment NODE_ENV:production",
     "dev-build": "rollup -cw",
