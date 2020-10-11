@@ -4,18 +4,14 @@ import VnodeSyringe from 'vue-vnode-syringe';
 describe('Error handling', () => {
 	test('No children', () => {
 		const usage = {
-			template: `
-				<div>
-					<vnode-syringe />
-				</div>
-			`,
+			template: '<div><vnode-syringe /></div>',
 			components: {
 				VnodeSyringe,
 			},
 		};
 
 		const wrapper = mount(usage);
-		expect(wrapper.isEmpty()).toBe(true);
+		expect(wrapper.html()).toBe('<div>\n  <!---->\n</div>');
 	});
 
 	test('No elements', () => {
@@ -1141,10 +1137,10 @@ describe('Component support', () => {
 		};
 
 		const wrapper = mount(usage);
-		const uids = wrapper.findAll({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
+		const uids = wrapper.findAllComponents({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
 		wrapper.setData({ items: ['b', 'a'] });
 		await wrapper.vm.$nextTick();
-		const newUids = wrapper.findAll({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
+		const newUids = wrapper.findAllComponents({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
 		expect(newUids).toEqual(uids);
 	});
 
