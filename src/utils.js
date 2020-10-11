@@ -1,3 +1,5 @@
+/* eslint-disable camelcase, prefer-spread, no-unused-expressions, unicorn/prevent-abbreviations */
+
 export const classStyleProps = {
 	M_staticClass: 'staticClass',
 	M_class: 'class',
@@ -8,31 +10,33 @@ export const classStyleProps = {
 export function Syringe(value, modifier) {
 	this.M_value = value;
 	this.M_modifier = modifier;
-};
+}
 
 const hyphenateRE = /\B([A-Z])/g;
-export const hyphenate = (str) => str.replace(hyphenateRE, '-$1').toLowerCase();
+export const hyphenate = string => string.replace(hyphenateRE, '-$1').toLowerCase();
 
-const { hasOwnProperty } = Object.prototype;
-export const hasOwn = (obj, key) => hasOwnProperty.call(obj, key);
+const {hasOwnProperty} = Object.prototype;
+export const hasOwn = (object, key) => hasOwnProperty.call(object, key);
 
-// from https://github.com/vuejs/vue/blob/6fe07eb/src/platforms/web/util/style.js#L5
-export const parseStyleText = (cssText) => {
+// From https://github.com/vuejs/vue/blob/6fe07eb/src/platforms/web/util/style.js#L5
+export const parseStyleText = cssText => {
 	const res = {};
 	const listDelimiter = /;(?![^(]*\))/g;
 	const propertyDelimiter = /:(.+)/;
-	cssText.split(listDelimiter).forEach((item) => {
+	cssText.split(listDelimiter).forEach(item => {
 		if (item) {
-			const tmp = item.split(propertyDelimiter);
-			tmp.length > 1 && (res[tmp[0].trim()] = tmp[1].trim());
+			const temporary = item.split(propertyDelimiter);
+			temporary.length > 1 && (res[temporary[0].trim()] = temporary[1].trim());
 		}
 	});
 	return res;
 };
 
-export function normalizeModifiers(obj, handlers) {
-	for (const key in obj) {
-		if (!hasOwn(obj, key)) { continue; }
+export function normalizeModifiers(object, handlers) {
+	for (const key in object) {
+		if (!hasOwn(object, key)) {
+			continue;
+		}
 
 		const modifier = key[key.length - 1];
 		if (modifier === '&' || modifier === '!') {
@@ -40,34 +44,34 @@ export function normalizeModifiers(obj, handlers) {
 
 			const handler = handlers && handlers[strippedKey];
 			if (handler) {
-				handler(obj[key], modifier);
+				handler(object[key], modifier);
 			} else {
-				obj[strippedKey] = new Syringe(obj[key], modifier);
+				object[strippedKey] = new Syringe(object[key], modifier);
 			}
 
-			delete obj[key];
+			delete object[key];
 		} else {
-			obj[key] = new Syringe(obj[key]);
+			object[key] = new Syringe(object[key]);
 		}
 	}
 }
 
-export const set = (obj, attr, { M_modifier, M_value }) => {
+export const set = (object, attr, {M_modifier, M_value}) => {
 	// Overwrite
-	if (M_modifier === '!' || !hasOwn(obj, attr)) {
-		obj[attr] = M_value;
+	if (M_modifier === '!' || !hasOwn(object, attr)) {
+		object[attr] = M_value;
 		return;
 	}
 
-	const base = obj[attr];
+	const base = object[attr];
 	if (M_modifier === '&' && base) {
 		if (attr === classStyleProps.M_class) {
-			obj[attr] = [base, M_value];
+			object[attr] = [base, M_value];
 			return;
 		}
 
 		if (attr === classStyleProps.M_staticClass) {
-			obj[attr] += ` ${M_value}`;
+			object[attr] += ` ${M_value}`;
 			return;
 		}
 
@@ -77,6 +81,7 @@ export const set = (obj, attr, { M_modifier, M_value }) => {
 			} else {
 				base.push(M_value);
 			}
+
 			return;
 		}
 
@@ -86,19 +91,20 @@ export const set = (obj, attr, { M_modifier, M_value }) => {
 		}
 
 		if (typeof base === 'function' && typeof M_value === 'function') {
-			obj[attr] = function () {
-				base.apply(this, arguments);
-				M_value.apply(this, arguments);
+			object[attr] = function () {
+				Reflect.apply(base, this, arguments);
+				Reflect.apply(M_value, this, arguments);
 			};
 		}
 	}
 };
 
-export const assign = (target, obj) => {
-	for (const attr in obj) {
-		if (hasOwn(obj, attr)) {
-			set(target, attr, obj[attr]);
+export const assign = (target, object) => {
+	for (const attr in object) {
+		if (hasOwn(object, attr)) {
+			set(target, attr, object[attr]);
 		}
 	}
+
 	return target;
 };

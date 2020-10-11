@@ -1,10 +1,10 @@
 import babel from 'rollup-plugin-babel';
-import { terser } from 'rollup-plugin-terser';
+import {terser} from 'rollup-plugin-terser';
 import filesize from 'rollup-plugin-filesize';
 
 const isProd = process.env.NODE_ENV === 'production';
 
-export default {
+const rollupConfig = {
 	input: 'src/vnode-syringe.js',
 	plugins: [
 		babel(),
@@ -23,3 +23,5 @@ export default {
 		name: 'VnodeSyringe',
 	},
 };
+
+export default rollupConfig;
