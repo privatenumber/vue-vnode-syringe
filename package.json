@@ -1,6 +1,6 @@
 {
   "name": "vue-vnode-syringe",
-  "version": "2.0.1",
+  "version": "0.0.0-semantic-release",
   "description": "🧬 Mutate your vNodes with vNode Syringe 💉",
   "keywords": [
     "vue",
@@ -9,6 +9,13 @@
     "modify",
     "overwrite"
   ],
+  "license": "MIT",
+  "repository": "privatenumber/vue-vnode-syringe",
+  "funding": "https://github.com/privatenumber/vue-vnode-syringe?sponsor=1",
+  "author": {
+    "name": "Hiroki Osame",
+    "email": "hiroki.osame@gmail.com"
+  },
   "files": [
     "dist"
   ],
@@ -18,19 +25,8 @@
     "dev-build": "rollup -cw",
     "dev": "jest --watchAll",
     "test": "jest",
-    "lint": "eslint --cache .",
-    "version": "npm run build && git add dist"
+    "lint": "eslint --cache ."
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/privatenumber/vue-vnode-syringe.git"
-  },
-  "author": "Hiroki Osame <hiroki.osame@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/privatenumber/vue-vnode-syringe/issues"
-  },
-  "homepage": "https://github.com/privatenumber/vue-vnode-syringe#readme",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
