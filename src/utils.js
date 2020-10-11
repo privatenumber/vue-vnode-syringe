@@ -1,16 +1,11 @@
 /* eslint-disable camelcase, prefer-spread, no-unused-expressions, unicorn/prevent-abbreviations */
 
 export const classStyleProps = {
-	M_staticClass: 'staticClass',
-	M_class: 'class',
-	M_staticStyle: 'staticStyle',
-	M_style: 'style',
+	staticClass: 'staticClass',
+	class: 'class',
+	staticStyle: 'staticStyle',
+	style: 'style',
 };
-
-export function Syringe(value, modifier) {
-	this.M_value = value;
-	this.M_modifier = modifier;
-}
 
 const hyphenateRE = /\B([A-Z])/g;
 export const hyphenate = string => string.replace(hyphenateRE, '-$1').toLowerCase();
@@ -46,54 +41,59 @@ export function normalizeModifiers(object, handlers) {
 			if (handler) {
 				handler(object[key], modifier);
 			} else {
-				object[strippedKey] = new Syringe(object[key], modifier);
+				object[strippedKey] = {
+					value: object[key],
+					modifier
+				};
 			}
 
 			delete object[key];
 		} else {
-			object[key] = new Syringe(object[key]);
+			object[key] = {
+				value: object[key],
+			};
 		}
 	}
 }
 
-export const set = (object, attr, {M_modifier, M_value}) => {
+export const set = (object, attr, {modifier, value}) => {
 	// Overwrite
-	if (M_modifier === '!' || !hasOwn(object, attr)) {
-		object[attr] = M_value;
+	if (modifier === '!' || !hasOwn(object, attr)) {
+		object[attr] = value;
 		return;
 	}
 
 	const base = object[attr];
-	if (M_modifier === '&' && base) {
-		if (attr === classStyleProps.M_class) {
-			object[attr] = [base, M_value];
+	if (modifier === '&' && base) {
+		if (attr === classStyleProps.class) {
+			object[attr] = [base, value];
 			return;
 		}
 
-		if (attr === classStyleProps.M_staticClass) {
-			object[attr] += ` ${M_value}`;
+		if (attr === classStyleProps.staticClass) {
+			object[attr] += ` ${value}`;
 			return;
 		}
 
 		if (Array.isArray(base)) {
-			if (Array.isArray(M_value)) {
-				base.push.apply(base, M_value);
+			if (Array.isArray(value)) {
+				base.push.apply(base, value);
 			} else {
-				base.push(M_value);
+				base.push(value);
 			}
 
 			return;
 		}
 
 		if (typeof base === 'object') {
-			Object.assign(base, M_value);
+			Object.assign(base, value);
 			return;
 		}
 
-		if (typeof base === 'function' && typeof M_value === 'function') {
+		if (typeof base === 'function' && typeof value === 'function') {
 			object[attr] = function () {
 				Reflect.apply(base, this, arguments);
-				Reflect.apply(M_value, this, arguments);
+				Reflect.apply(value, this, arguments);
 			};
 		}
 	}
