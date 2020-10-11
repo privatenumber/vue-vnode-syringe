@@ -33,8 +33,14 @@
   "homepage": "https://github.com/privatenumber/vue-vnode-syringe#readme",
   "husky": {
     "hooks": {
-      "pre-commit": "npm test"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint",
+      "jest --bail --findRelatedTests"
+    ]
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",
@@ -47,6 +53,7 @@
     "eslint-plugin-import": "^2.22.1",
     "husky": "^4.3.0",
     "jest": "^26.5.2",
+    "lint-staged": "^10.4.0",
     "rollup": "^2.29.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-filesize": "^9.0.2",
