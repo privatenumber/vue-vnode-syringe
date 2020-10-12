@@ -160,10 +160,12 @@ const vnodeSyringe = {
 				if (!vnode.data) {
 					vnode.data = {};
 				}
-				const {data: vnodeData} = vnode;
+				const {
+					data: vnodeData,
+					componentOptions,
+				} = vnode;
 
 				// If component
-				const {componentOptions} = vnode;
 				if (componentOptions) {
 					const propsData = getPropsData(componentOptions, attrs);
 					merge(componentOptions.propsData, propsData);
