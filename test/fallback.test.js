@@ -89,7 +89,7 @@ describe('fallback', () => {
 					VnodeSyringe,
 				},
 			});
-			expect(wrapper.html()).toBe(`<div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div a="1" b="c" c="3" class="static-class dynamic-class" style="color: red;"></div>\n</div>`);
+			expect(wrapper.html()).toBe(`<div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div b="c" a="1" c="3" class="static-class dynamic-class" style="color: red;"></div>\n</div>`);
 		});
 
 		describe('event-handlers', () => {
@@ -256,6 +256,7 @@ describe('fallback', () => {
 						a="1"
 						:b="2"
 						:c="'3'"
+						camelCase="-"
 					>
 						<no-inherit-attrs/>
 					</vnode-syringe>
@@ -265,7 +266,7 @@ describe('fallback', () => {
 					NoInheritAttrs,
 				},
 			});
-			expect(wrapper.html()).toBe('<div class="static-class dynamic-class 3" style="color: red; font: serif;"> </div>');
+			expect(wrapper.html()).toBe('<div class="static-class dynamic-class 3" style="color: red; font: serif;">- </div>');
 		});
 
 		describe('event-handlers', () => {
@@ -436,13 +437,6 @@ describe('fallback', () => {
 					template: `
 						<div>
 							<vnode-syringe
-								class="static-class"
-								:class="'dynamic-class'"
-								style="color:red"
-								:style="'font:serif'"
-								a="1"
-								:b="2"
-								:c="'3'"
 								@click="onClick"
 								@click.native="onNativeClick"
 							>
@@ -459,6 +453,7 @@ describe('fallback', () => {
 								<no-inherit-listeners
 									:style="{color:'blue'}"
 								/>
+								<test-comp />
 								<test-comp
 									b="c"
 								/>
@@ -482,9 +477,9 @@ describe('fallback', () => {
 
 				const divs = wrapper.findAll('div');
 				await divs.trigger('click');
-				expect(onClick).toHaveBeenCalledTimes(2);
-				expect(onNativeClick).toHaveBeenCalledTimes(5);
-			});			
+				expect(onClick).toHaveBeenCalledTimes(3);
+				expect(onNativeClick).toHaveBeenCalledTimes(6);
+			});
 		});
 	});
 });

@@ -20,36 +20,26 @@ const mergeStatic = (data, name) => {
 	if (!data[name] && !data[staticProp]) {
 		return;
 	}
-	data[name] = [
-		data[staticProp] ? data[staticProp] : [],
-		data[name] ? data[name] : [],
-	].flat(Infinity);
+	data[name] = [data[staticProp], data[name]].filter(Boolean).flat(Infinity);
 	delete data[staticProp];
 };
 
 const { hasOwnProperty } = Object.prototype;
 
-/*
-Needs to handle
-attrs: {
-	a: 1,
-	b: 2,
-	c: 3
-}
-*/
-function merge(dest, fromObj) {
-	if (isNil(fromObj)) {
-		return dest;
-	}
+function merge(dest, src) {
+	for (const key in src) {
+		const { value, modifier } = src[key];
 
-	if (isNil(dest)) {
-		return /*Array.isArray(fromObj) ? fromObj.slice(0) :*/ fromObj;
-	}
+		if (modifier === OVERWRITE) {
+			dest[key] = value;
+		} else if (modifier === FALLBACK) {
+			if (isNil(dest[key])) {
+				dest[key] = value;
+			}
+		} else if (modifier === MERGE) {
 
-	else if (!Array.isArray(dest) && typeof dest === 'object') {
-		return Object.assign({}, fromObj, dest);
+		}
 	}
-
 	return dest;
 }
 
@@ -83,15 +73,15 @@ function getPropsData(componentOptions, attrs) {
 		const isProp = findProp(props, attr);
 		if (isProp) {
 			propsData[isProp] = attrs[attr];
-			attrs[attr] = undefined;
+			delete attrs[attr]
 		}
 	}
 	return propsData;
 }
 
-const FALLBACK = 0;
-const OVERWRITE = 1;
-const MERGE = 2;
+const FALLBACK = 'FALLBACK';
+const OVERWRITE = 'OVERWRITE';
+const MERGE = 'MERGE';
 
 const modifiers = {
 	'!': OVERWRITE,
@@ -115,10 +105,10 @@ function parseModifiers(obj) {
 }
 
 const getStyle = (name, attrs, data) => {
-	const val = attrs[name];
-	if (val) {
+	const value = attrs[name];
+	if (value) {
 		delete attrs[name];
-		return val;
+		return value;
 	}
 	const staticProp = 'static' + name[0].toUpperCase() + name.slice(1);
 	return {
@@ -137,19 +127,9 @@ const vnodeSyringe = {
 
 		const attrs = parseModifiers(data.attrs);
 		const on = parseModifiers(data.on);
+		const nativeOn = parseModifiers(data.nativeOn);
 		const _class = getStyle('class', attrs, data);
 		const style = getStyle('style', attrs, data);
-
-
-		console.log({
-			class: _class,
-			style,
-			attrs,
-			on,
-		});
-
-		mergeStatic(data, 'class');
-		mergeStatic(data, 'style');
 
 		return children.map(vnode => {
 			if (vnode.tag) {
@@ -157,29 +137,27 @@ const vnodeSyringe = {
 					vnode.data = {};
 				}
 				const {data: vnodeData} = vnode;
-				const attrs = { ...data.attrs };
-				const on = { ...data.on };
-				const nativeOn = { ...data.nativeOn };
 
 				// If component
 				const {componentOptions} = vnode;
 				if (componentOptions) {
 					const propsData = getPropsData(componentOptions, attrs);
-					componentOptions.propsData = merge(componentOptions.propsData, propsData);
-					componentOptions.listeners = merge(componentOptions.listeners, on);
+					merge(componentOptions.propsData, propsData);
+					componentOptions.listeners = merge(componentOptions.listeners || {}, on);
 
-					vnodeData.nativeOn = merge(vnodeData.nativeOn, nativeOn);
+					vnodeData.nativeOn = merge(vnodeData.nativeOn || {}, nativeOn);
 					vnodeData.on = vnodeData.nativeOn;
 				} else {
-					vnodeData.on = merge(vnodeData.on, on);
+					vnodeData.on = merge(vnodeData.on || {}, on);
 				}
-				vnodeData.attrs = merge(vnodeData.attrs, attrs);
+
+				vnodeData.attrs = merge(vnodeData.attrs || {}, attrs);
 
 				mergeStatic(vnodeData, 'class');
 				mergeStatic(vnodeData, 'style');
-				vnode.data = merge(vnodeData, {
-					class: data.class,
-					style: data.style,
+				merge(vnodeData, {
+					class: _class,
+					style,
 				});
 			}
 
