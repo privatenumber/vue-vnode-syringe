@@ -18,6 +18,7 @@ const mergeStatic = (data, name) => {
 	if (data[name].length === 0) {
 		data[name] = undefined;
 	}
+
 	delete data[staticProp];
 };
 
@@ -29,9 +30,9 @@ function merge(dest, src) {
 			const {value, modifier} = src[key];
 			const destValue = dest[key];
 			if (
-				destValue === undefined
-				|| destValue === null
-				|| modifier === OVERWRITE
+				destValue === undefined ||
+				destValue === null ||
+				modifier === OVERWRITE
 			) {
 				dest[key] = value;
 			} else if (modifier === MERGE) {
@@ -41,9 +42,9 @@ function merge(dest, src) {
 					} else {
 						destValue.push(value);
 					}
-				}else if (typeof destValue === 'object' && typeof value === 'object') {
+				} else if (typeof destValue === 'object' && typeof value === 'object') {
 					Object.assign(destValue, value);
-				}else if (typeof destValue === 'function' && typeof value === 'function') {
+				} else if (typeof destValue === 'function' && typeof value === 'function') {
 					dest[key] = function () {
 						Reflect.apply(destValue, this, arguments);
 						Reflect.apply(value, this, arguments);
@@ -91,7 +92,6 @@ function getPropsData(componentOptions, attrs) {
 				delete attrs[isProp];
 			}
 		}
-
 	}
 
 	return propsData;
@@ -124,10 +124,10 @@ function parseModifiers(object) {
 }
 
 const getStyle = (name, attrs, data) => {
-	const val = attrs[name];
-	if (val) {
+	const value_ = attrs[name];
+	if (value_) {
 		delete attrs[name];
-		return val;
+		return value_;
 	}
 
 	const staticProp = 'static' + name[0].toUpperCase() + name.slice(1);
