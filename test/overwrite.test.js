@@ -11,8 +11,9 @@ describe('overwrite', () => {
 						:class!="['dynamic-class', 2, ['3', 2]]"
 						:style!="{ font: 'serif' }"
 						a!="1"
-						:b!="2"
+						:b="2"
 						:c!="'3'"
+						@click!
 					>
 						<div/>
 					</vnode-syringe>

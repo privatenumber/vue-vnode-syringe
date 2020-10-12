@@ -1,5 +1,3 @@
-
-
 const hyphenateRE = /\B([A-Z])/g;
 const hyphenate = string => string.replace(hyphenateRE, '-$1').toLowerCase();
 
@@ -91,12 +89,64 @@ function getPropsData(componentOptions, attrs) {
 	return propsData;
 }
 
+const FALLBACK = 0;
+const OVERWRITE = 1;
+const MERGE = 2;
+
+const modifiers = {
+	'!': OVERWRITE,
+	'&': MERGE,
+};
+
+function parseModifiers(obj) {
+	const normalized = {};
+	for (let key in obj) {
+		const value = obj[key];
+		let modifier = modifiers[key.slice(-1)];
+		if (modifier) {
+			key = key.slice(0, -1);
+		} else {
+			modifier = FALLBACK;
+		}
+
+		normalized[key] = { value, modifier };
+	}
+	return normalized;
+}
+
+const getStyle = (name, attrs, data) => {
+	const val = attrs[name];
+	if (val) {
+		delete attrs[name];
+		return val;
+	}
+	const staticProp = 'static' + name[0].toUpperCase() + name.slice(1);
+	return {
+		value: [data[staticProp], data[name]].filter(Boolean).flat(Infinity),
+		modifier: FALLBACK,
+	};
+};
+
+
 const vnodeSyringe = {
 	functional: true,
 	render(h, {children, data}) {
 		if (!children || isEmpty(data)) {
 			return children;
 		}
+
+		const attrs = parseModifiers(data.attrs);
+		const on = parseModifiers(data.on);
+		const _class = getStyle('class', attrs, data);
+		const style = getStyle('style', attrs, data);
+
+
+		console.log({
+			class: _class,
+			style,
+			attrs,
+			on,
+		});
 
 		mergeStatic(data, 'class');
 		mergeStatic(data, 'style');
@@ -107,10 +157,6 @@ const vnodeSyringe = {
 					vnode.data = {};
 				}
 				const {data: vnodeData} = vnode;
-
-				mergeStatic(vnodeData, 'class');
-				mergeStatic(vnodeData, 'style');
-
 				const attrs = { ...data.attrs };
 				const on = { ...data.on };
 				const nativeOn = { ...data.nativeOn };
@@ -129,6 +175,8 @@ const vnodeSyringe = {
 				}
 				vnodeData.attrs = merge(vnodeData.attrs, attrs);
 
+				mergeStatic(vnodeData, 'class');
+				mergeStatic(vnodeData, 'style');
 				vnode.data = merge(vnodeData, {
 					class: data.class,
 					style: data.style,
