@@ -64,7 +64,7 @@ describe('Modifiers', () => {
 			template: `
 				<vnode-syringe
 					:style="{ color: 'red' }"
-					:style="{ color: 'green' }"
+					:style&="{ color: 'green' }"
 					:style!="{ color: 'blue' }"
 
 					:class="['computed-a']"
