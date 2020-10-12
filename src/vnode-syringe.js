@@ -28,21 +28,38 @@ const { hasOwnProperty } = Object.prototype;
 
 function merge(dest, src) {
 	for (const key in src) {
+		const destValue = dest[key];
 		const { value, modifier } = src[key];
-
-		if (modifier === OVERWRITE) {
+		if (isNil(destValue) || modifier === OVERWRITE) {
 			dest[key] = value;
-		} else if (modifier === FALLBACK) {
-			if (isNil(dest[key])) {
-				dest[key] = value;
-			}
 		} else if (modifier === MERGE) {
+			if (Array.isArray(destValue)) {
+				if (Array.isArray(value)) {
+					destValue.push(...value);
+				} else {
+					destValue.push(value);
+				}
+				continue;
+			}
 
+			if (typeof destValue === 'object' && typeof value === 'object') {
+				Object.assign(destValue, value);
+				continue;
+			}
+
+			if (typeof destValue === 'function' && typeof value === 'function') {
+				dest[key] = function() {
+					destValue.apply(this, arguments);
+					value.apply(this, arguments);
+				};
+				continue;
+			}
+
+			dest[key] += value;
 		}
 	}
 	return dest;
 }
-
 
 function findProp(propDefs, attr) {
 	if (hasOwnProperty.call(propDefs, attr)) {
@@ -130,6 +147,13 @@ const vnodeSyringe = {
 		const nativeOn = parseModifiers(data.nativeOn);
 		const _class = getStyle('class', attrs, data);
 		const style = getStyle('style', attrs, data);
+
+		if (typeof style.value === 'string') {
+			style.value = Object.fromEntries(style.value.split(';').filter(Boolean).map(pair => {
+				const [key, value] = pair.split(':');
+				return [camelize(key.trim()), value.trim()];
+			}));
+		}
 
 		return children.map(vnode => {
 			if (vnode.tag) {
