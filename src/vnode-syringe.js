@@ -1,8 +1,3 @@
-const hyphenateRE = /\B([A-Z])/g;
-const hyphenate = string => string.replace(hyphenateRE, '-$1').toLowerCase();
-
-const camelizeRE = /-(\w)/g;
-const camelize = string => string.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '');
 
 const isEmpty = object => {
 	// eslint-disable-next-line no-unreachable-loop
@@ -13,8 +8,6 @@ const isEmpty = object => {
 	return true;
 };
 
-const isNil = value => value === undefined || value === null;
-
 const mergeStatic = (data, name) => {
 	const staticProp = 'static' + name[0].toUpperCase() + name.slice(1);
 	if (!data[name] && !data[staticProp]) {
@@ -22,6 +15,9 @@ const mergeStatic = (data, name) => {
 	}
 
 	data[name] = [data[staticProp], data[name]].filter(Boolean).flat(Infinity);
+	if (data[name].length === 0) {
+		data[name] = undefined;
+	}
 	delete data[staticProp];
 };
 
@@ -29,55 +25,53 @@ const {hasOwnProperty} = Object.prototype;
 
 function merge(dest, src) {
 	for (const key in src) {
-		const destValue = dest[key];
-		const {value, modifier} = src[key];
-		if (isNil(destValue) || modifier === OVERWRITE) {
-			dest[key] = value;
-		} else if (modifier === MERGE) {
-			if (Array.isArray(destValue)) {
-				if (Array.isArray(value)) {
-					destValue.push(...value);
+		if (src[key]) {
+			const {value, modifier} = src[key];
+			const destValue = dest[key];
+			if (
+				destValue === undefined
+				|| destValue === null
+				|| modifier === OVERWRITE
+			) {
+				dest[key] = value;
+			} else if (modifier === MERGE) {
+				if (Array.isArray(destValue)) {
+					if (Array.isArray(value)) {
+						destValue.push(...value);
+					} else {
+						destValue.push(value);
+					}
+				}else if (typeof destValue === 'object' && typeof value === 'object') {
+					Object.assign(destValue, value);
+				}else if (typeof destValue === 'function' && typeof value === 'function') {
+					dest[key] = function () {
+						Reflect.apply(destValue, this, arguments);
+						Reflect.apply(value, this, arguments);
+					};
 				} else {
-					destValue.push(value);
+					dest[key] += value;
 				}
-
-				continue;
 			}
-
-			if (typeof destValue === 'object' && typeof value === 'object') {
-				Object.assign(destValue, value);
-				continue;
-			}
-
-			if (typeof destValue === 'function' && typeof value === 'function') {
-				dest[key] = function () {
-					Reflect.apply(destValue, this, arguments);
-					Reflect.apply(value, this, arguments);
-				};
-
-				continue;
-			}
-
-			dest[key] += value;
 		}
 	}
 
 	return dest;
 }
 
-function findProp(propDefs, attr) {
-	if (hasOwnProperty.call(propDefs, attr)) {
-		return attr;
+const hyphenateRE = /\B([A-Z])/g;
+const hyphenate = string => string.replace(hyphenateRE, '-$1').toLowerCase();
+
+const camelizeRE = /-(\w)/g;
+const camelize = string => string.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '');
+
+function findProp(attrs, prop) {
+	if (hasOwnProperty.call(attrs, prop)) {
+		return prop;
 	}
 
-	const kebab = hyphenate(attr);
-	if (hasOwnProperty.call(propDefs, kebab)) {
+	const kebab = hyphenate(prop);
+	if (hasOwnProperty.call(attrs, kebab)) {
 		return kebab;
-	}
-
-	const camel = camelize(attr);
-	if (hasOwnProperty.call(propDefs, camel)) {
-		return camel;
 	}
 
 	return false;
@@ -87,22 +81,25 @@ function getPropsData(componentOptions, attrs) {
 	const {props} = componentOptions.Ctor.options;
 	const propsData = {};
 
-	// Iterate over given attrs
-	for (const attr in attrs) {
-		// Check if the attr is a prop
-		const isProp = findProp(props, attr);
-		if (isProp) {
-			propsData[isProp] = attrs[attr];
-			delete attrs[attr];
+	if (props) {
+		// Iterate over props to find attrs that are props
+		// By iterating over props instead of attrs, we can leverage Vue's camelization
+		for (const prop in props) {
+			const isProp = findProp(attrs, prop);
+			if (isProp) {
+				propsData[prop] = attrs[isProp];
+				delete attrs[isProp];
+			}
 		}
+
 	}
 
 	return propsData;
 }
 
-const FALLBACK = 'FALLBACK';
-const OVERWRITE = 'OVERWRITE';
-const MERGE = 'MERGE';
+const FALLBACK = 0;
+const OVERWRITE = 1;
+const MERGE = 2;
 
 const modifiers = {
 	'!': OVERWRITE,
@@ -127,15 +124,21 @@ function parseModifiers(object) {
 }
 
 const getStyle = (name, attrs, data) => {
-	const value = attrs[name];
-	if (value) {
+	const val = attrs[name];
+	if (val) {
 		delete attrs[name];
-		return value;
+		return val;
 	}
 
 	const staticProp = 'static' + name[0].toUpperCase() + name.slice(1);
+	const value = [data[staticProp], data[name]].filter(Boolean).flat(Infinity);
+
+	if (!value.length) {
+		return undefined;
+	}
+
 	return {
-		value: [data[staticProp], data[name]].filter(Boolean).flat(Infinity),
+		value,
 		modifier: FALLBACK,
 	};
 };
@@ -153,7 +156,7 @@ const vnodeSyringe = {
 		const _class = getStyle('class', attrs, data);
 		const style = getStyle('style', attrs, data);
 
-		if (typeof style.value === 'string') {
+		if (style && typeof style.value === 'string') {
 			style.value = Object.fromEntries(style.value.split(';').filter(Boolean).map(pair => {
 				const [key, value] = pair.split(':');
 				return [camelize(key.trim()), value.trim()];
