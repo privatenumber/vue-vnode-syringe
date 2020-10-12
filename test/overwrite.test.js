@@ -2,7 +2,6 @@ import {mount} from '@vue/test-utils';
 import VnodeSyringe from 'vue-vnode-syringe';
 
 describe('overwrite', () => {
-
 	describe('native element', () => {
 		test('apply new attributes', () => {
 			const wrapper = mount({
@@ -89,7 +88,7 @@ describe('overwrite', () => {
 				},
 			});
 
-			expect(wrapper.html()).toBe(`<div>\n  <div a="1" b="2" c="3" class="static-class" style="font: serif;"></div>\n  <div a="1" b="2" c="3" class="static-class" style="font: serif;"></div>\n  <div b="2" a="1" c="3" class="static-class" style="font: serif;"></div>\n  <div a="1" b="2" c="3" class="static-class" style="font: serif;"></div>\n  <div d="1" b="2" a="1" c="3" class="static-class" style="font: serif;"></div>\n</div>`);
+			expect(wrapper.html()).toBe('<div>\n  <div a="1" b="2" c="3" class="static-class" style="font: serif;"></div>\n  <div a="1" b="2" c="3" class="static-class" style="font: serif;"></div>\n  <div b="2" a="1" c="3" class="static-class" style="font: serif;"></div>\n  <div a="1" b="2" c="3" class="static-class" style="font: serif;"></div>\n  <div d="1" b="2" a="1" c="3" class="static-class" style="font: serif;"></div>\n</div>');
 		});
 
 		describe('event-handlers', () => {
@@ -145,7 +144,7 @@ describe('overwrite', () => {
 				expect(onFocus).toHaveBeenCalled();
 			});
 
-			// v-on.native is not allowed on native elements
+			// V-on.native is not allowed on native elements
 
 			test('multiple elements', async () => {
 				const onClick = jest.fn();

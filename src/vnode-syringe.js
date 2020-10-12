@@ -2,34 +2,35 @@ const hyphenateRE = /\B([A-Z])/g;
 const hyphenate = string => string.replace(hyphenateRE, '-$1').toLowerCase();
 
 const camelizeRE = /-(\w)/g;
-const camelize = (function (str) {
-	return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
-});
+const camelize = string => string.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '');
 
-const isEmpty = (obj) => {
-	for (const key in obj) {
+const isEmpty = object => {
+	// eslint-disable-next-line no-unreachable-loop
+	for (const key in object) {
 		return false;
 	}
-	return true;
-}
 
-const isNil = val => val === undefined || val === null;
+	return true;
+};
+
+const isNil = value => value === undefined || value === null;
 
 const mergeStatic = (data, name) => {
 	const staticProp = 'static' + name[0].toUpperCase() + name.slice(1);
 	if (!data[name] && !data[staticProp]) {
 		return;
 	}
+
 	data[name] = [data[staticProp], data[name]].filter(Boolean).flat(Infinity);
 	delete data[staticProp];
 };
 
-const { hasOwnProperty } = Object.prototype;
+const {hasOwnProperty} = Object.prototype;
 
 function merge(dest, src) {
 	for (const key in src) {
 		const destValue = dest[key];
-		const { value, modifier } = src[key];
+		const {value, modifier} = src[key];
 		if (isNil(destValue) || modifier === OVERWRITE) {
 			dest[key] = value;
 		} else if (modifier === MERGE) {
@@ -39,6 +40,7 @@ function merge(dest, src) {
 				} else {
 					destValue.push(value);
 				}
+
 				continue;
 			}
 
@@ -48,16 +50,18 @@ function merge(dest, src) {
 			}
 
 			if (typeof destValue === 'function' && typeof value === 'function') {
-				dest[key] = function() {
-					destValue.apply(this, arguments);
-					value.apply(this, arguments);
+				dest[key] = function () {
+					Reflect.apply(destValue, this, arguments);
+					Reflect.apply(value, this, arguments);
 				};
+
 				continue;
 			}
 
 			dest[key] += value;
 		}
 	}
+
 	return dest;
 }
 
@@ -80,19 +84,19 @@ function findProp(propDefs, attr) {
 }
 
 function getPropsData(componentOptions, attrs) {
-	const { props } = componentOptions.Ctor.options;
+	const {props} = componentOptions.Ctor.options;
 	const propsData = {};
 
 	// Iterate over given attrs
 	for (const attr in attrs) {
-
 		// Check if the attr is a prop
 		const isProp = findProp(props, attr);
 		if (isProp) {
 			propsData[isProp] = attrs[attr];
-			delete attrs[attr]
+			delete attrs[attr];
 		}
 	}
+
 	return propsData;
 }
 
@@ -105,10 +109,10 @@ const modifiers = {
 	'&': MERGE,
 };
 
-function parseModifiers(obj) {
+function parseModifiers(object) {
 	const normalized = {};
-	for (let key in obj) {
-		const value = obj[key];
+	for (let key in object) {
+		const value = object[key];
 		let modifier = modifiers[key.slice(-1)];
 		if (modifier) {
 			key = key.slice(0, -1);
@@ -116,8 +120,9 @@ function parseModifiers(obj) {
 			modifier = FALLBACK;
 		}
 
-		normalized[key] = { value, modifier };
+		normalized[key] = {value, modifier};
 	}
+
 	return normalized;
 }
 
@@ -127,13 +132,13 @@ const getStyle = (name, attrs, data) => {
 		delete attrs[name];
 		return value;
 	}
+
 	const staticProp = 'static' + name[0].toUpperCase() + name.slice(1);
 	return {
 		value: [data[staticProp], data[name]].filter(Boolean).flat(Infinity),
 		modifier: FALLBACK,
 	};
 };
-
 
 const vnodeSyringe = {
 	functional: true,
@@ -160,6 +165,7 @@ const vnodeSyringe = {
 				if (!vnode.data) {
 					vnode.data = {};
 				}
+
 				const {
 					data: vnodeData,
 					componentOptions,

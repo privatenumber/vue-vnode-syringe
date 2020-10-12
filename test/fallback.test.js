@@ -2,7 +2,6 @@ import {mount} from '@vue/test-utils';
 import VnodeSyringe from 'vue-vnode-syringe';
 
 describe('fallback', () => {
-
 	describe('native element', () => {
 		test('apply new attributes', () => {
 			const wrapper = mount({
@@ -89,7 +88,7 @@ describe('fallback', () => {
 					VnodeSyringe,
 				},
 			});
-			expect(wrapper.html()).toBe(`<div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div b="c" a="1" c="3" class="static-class dynamic-class" style="color: red;"></div>\n</div>`);
+			expect(wrapper.html()).toBe('<div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div b="c" a="1" c="3" class="static-class dynamic-class" style="color: red;"></div>\n</div>');
 		});
 
 		describe('event-handlers', () => {
@@ -145,7 +144,7 @@ describe('fallback', () => {
 				expect(onFocus).toHaveBeenCalled();
 			});
 
-			// v-on.native is not allowed on native elements
+			// V-on.native is not allowed on native elements
 
 			test('multiple elements', async () => {
 				const onClick = jest.fn();
