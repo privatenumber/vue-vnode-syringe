@@ -1,13 +1,17 @@
 {
   "name": "vue-vnode-syringe",
   "version": "0.0.0-semantic-release",
-  "description": "🧬 Mutate your vNodes with vNode Syringe 💉",
+  "description": "Add attributes and event-listeners to <slot> content",
   "keywords": [
     "vue",
     "vnode",
     "mutate",
     "modify",
-    "overwrite"
+    "merge",
+    "overwrite",
+    "attributes",
+    "props",
+    "event-listeners"
   ],
   "license": "MIT",
   "repository": "privatenumber/vue-vnode-syringe",
