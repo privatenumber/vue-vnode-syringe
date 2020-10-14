@@ -1,90 +1,5 @@
-import { mount } from '@vue/test-utils';
+import {mount} from '@vue/test-utils';
 import VnodeSyringe from 'vue-vnode-syringe';
-
-describe('Error handling', () => {
-	test('No children', () => {
-		const usage = {
-			template: '<div><vnode-syringe /></div>',
-			components: {
-				VnodeSyringe,
-			},
-		};
-
-		const wrapper = mount(usage);
-		expect(wrapper.html()).toBe('<div>\n  <!---->\n</div>');
-	});
-
-	test('No elements', () => {
-		const usage = {
-			template: `
-				<div>
-					<vnode-syringe>
-						Hello World
-					</vnode-syringe>
-				</div>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-		};
-
-		const wrapper = mount(usage);
-		expect(wrapper.text()).toBe('Hello World');
-	});
-
-	test('No usage', () => {
-		const usage = {
-			template: `
-				<div>
-					<vnode-syringe>
-						<span />
-						<span title="test" />
-						<span class="class" />
-					</vnode-syringe>
-				</div>
-			`,
-			components: {
-				VnodeSyringe,
-			},
-		};
-
-		const wrapper = mount(usage);
-		const spans = wrapper.findAll('span');
-		expect(spans.length).toBe(3);
-		expect(spans.at(0).attributes()).toEqual({});
-		expect(spans.at(1).attributes()).toEqual({ title: 'test' });
-		expect(spans.at(2).attributes()).toEqual({ class: 'class' });
-	});
-
-	test('No usage with component', () => {
-		const ChildComp = {
-			template: '<section>Child component</section>',
-		};
-
-		const usage = {
-			template: `
-				<div>
-					<vnode-syringe>
-						<child-comp />
-						<child-comp title="test" />
-						<child-comp class="class" />
-					</vnode-syringe>
-				</div>
-			`,
-			components: {
-				VnodeSyringe,
-				ChildComp,
-			},
-		};
-
-		const wrapper = mount(usage);
-		const comps = wrapper.findAll('section');
-		expect(comps.length).toBe(3);
-		expect(comps.at(0).attributes()).toEqual({});
-		expect(comps.at(1).attributes()).toEqual({ title: 'test' });
-		expect(comps.at(2).attributes()).toEqual({ class: 'class' });
-	});
-});
 
 describe('Native element support', () => {
 	test('Apply attributes to single child', () => {
@@ -216,7 +131,6 @@ describe('Native element support', () => {
 			expect(wrapper.attributes('style')).toBe('color: red; background: blue;');
 		});
 
-
 		test('Static class', () => {
 			const usage = {
 				template: `
@@ -236,7 +150,6 @@ describe('Native element support', () => {
 			const wrapper = mount(usage);
 			expect(wrapper.attributes('class')).toBe('class-b');
 		});
-
 
 		test('Computed class', () => {
 			const usage = {
@@ -309,7 +222,7 @@ describe('Native element support', () => {
 			};
 
 			const wrapper = mount(usage);
-			expect(wrapper.attributes('a')).toBe('3');
+			expect(wrapper.attributes('a')).toBe('31');
 			expect(wrapper.attributes('b')).toBe('1,2');
 			expect(wrapper.attributes('c')).toBe('3');
 			expect(wrapper.attributes('d')).toBe('4');
@@ -1096,7 +1009,7 @@ describe('Component support', () => {
 		};
 
 		const wrapper = mount(usage);
-		wrapper.setData({ data: 'shouldnt destroy' });
+		wrapper.setData({data: 'shouldnt destroy'});
 		await wrapper.vm.$nextTick();
 		expect(beforeUpdate).toHaveBeenCalled();
 		expect(beforeDestroy).not.toHaveBeenCalled();
@@ -1137,10 +1050,10 @@ describe('Component support', () => {
 		};
 
 		const wrapper = mount(usage);
-		const uids = wrapper.findAllComponents({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
-		wrapper.setData({ items: ['b', 'a'] });
+		const uids = wrapper.findAllComponents({ref: 'child'}).wrappers.map(w => w.vm._uid);
+		wrapper.setData({items: ['b', 'a']});
 		await wrapper.vm.$nextTick();
-		const newUids = wrapper.findAllComponents({ ref: 'child' }).wrappers.map((w) => w.vm._uid);
+		const newUids = wrapper.findAllComponents({ref: 'child'}).wrappers.map(w => w.vm._uid);
 		expect(newUids).toEqual(uids);
 	});
 
@@ -1284,7 +1197,7 @@ describe('Component support', () => {
 			};
 
 			const wrapper = mount(usage);
-			expect(wrapper.attributes('style')).toBe('background: blue; color: red;');
+			expect(wrapper.attributes('style')).toBe('color: red; background: blue;');
 		});
 
 		test('Static class', () => {
@@ -1335,7 +1248,7 @@ describe('Component support', () => {
 			};
 
 			const wrapper = mount(usage);
-			expect(wrapper.attributes('class')).toBe('class-c class-b');
+			expect(wrapper.attributes('class')).toBe('class-b');
 		});
 
 		test('Event listeners', () => {
@@ -1400,7 +1313,7 @@ describe('Component support', () => {
 			};
 
 			const wrapper = mount(usage);
-			expect(wrapper.attributes('a')).toBe('3');
+			expect(wrapper.attributes('a')).toBe('31');
 			expect(wrapper.attributes('b')).toBe('1,2,3,4');
 			expect(wrapper.attributes('c')).toBe('2,3');
 			expect(wrapper.attributes('d')).toBe('4');
@@ -1431,7 +1344,7 @@ describe('Component support', () => {
 			};
 
 			const wrapper = mount(usage);
-			expect(wrapper.text()).toBe('hello world - {"c":1,"a":1}');
+			expect(wrapper.text()).toBe('hello worldgoodbye world - {"c":1,"a":1}');
 		});
 
 		test('Static style', () => {
@@ -1516,7 +1429,6 @@ describe('Component support', () => {
 			const wrapper = mount(usage);
 			expect(wrapper.attributes('class')).toBe('class-b class-a');
 		});
-
 
 		test('Computed class', () => {
 			const ChildComp = {
@@ -1858,40 +1770,40 @@ describe('Component support', () => {
 		});
 
 		// Limitation with native event listeners
-		// test('Native event listeners', () => {
-		// 	const ChildComp = {
-		// 		template: '<div>Child component</div>',
-		// 		mounted() {
-		// 			this.$emit('click');
-		// 		},
-		// 	};
+		test('Native event listeners', () => {
+			const ChildComp = {
+				template: '<div>Child component</div>',
+				mounted() {
+					this.$emit('click');
+				},
+			};
 
-		// 	const onClick = jest.fn();
-		// 	const dontClick = jest.fn();
-		// 	const usage = {
-		// 		template: `
-		// 			<vnode-syringe
-		// 				@click!.native="onClick"
-		// 			>
-		// 				<child-comp
-		// 					@click.native="dontClick"
-		// 				/>
-		// 			</vnode-syringe>
-		// 		`,
-		// 		components: {
-		// 			VnodeSyringe,
-		// 			ChildComp,
-		// 		},
-		// 		methods: {
-		// 			onClick,
-		// 			dontClick,
-		// 		},
-		// 	};
+			const onClick = jest.fn();
+			const dontClick = jest.fn();
+			const usage = {
+				template: `
+					<vnode-syringe
+						@click!.native="onClick"
+					>
+						<child-comp
+							@click.native="dontClick"
+						/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					ChildComp,
+				},
+				methods: {
+					onClick,
+					dontClick,
+				},
+			};
 
-		// 	const wrapper = mount(usage);
-		// 	wrapper.trigger('click');
-		// 	expect(dontClick).not.toHaveBeenCalled();
-		// 	expect(onClick).toHaveBeenCalled();
-		// });
+			const wrapper = mount(usage);
+			wrapper.trigger('click');
+			expect(dontClick).not.toHaveBeenCalled();
+			expect(onClick).toHaveBeenCalled();
+		});
 	});
 });
