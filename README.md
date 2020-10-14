@@ -165,10 +165,10 @@ _Usage.vue_
 <button-group disabled>
     <button
 
-         <!-- Renders as `button button-group__button` -->
+         <!-- Gets overwritten to button button-group__button -->
         class="button"
 
-        <!-- Will be overwritten to type="button" -->
+        <!-- Gets overwritten to type="button" -->
         type="submit"
 
         <!-- Will be inherit parent's disabled state -->
@@ -177,7 +177,7 @@ _Usage.vue_
     </button>
 
     <button
-         <!-- Renders as `button button-group__button` -->
+         <!-- Gets overwritten to button button-group__button -->
         class="button"
 
         <!-- Won't inherit parent's disabled state -->
