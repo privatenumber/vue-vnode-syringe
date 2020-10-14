@@ -42,7 +42,10 @@ This is the _default behavior_, and the class `new-class` and event-listener `ne
 For example, given the following `<slot>` content, only the event-listener `newOnClick` will be added:
 
 ```html
-<div class="some-class">
+<div
+	class="some-class"
+	<!-- @click="newOnClick" gets added -->
+>
     some content
 </div>
 ```
@@ -63,8 +66,8 @@ For example, given the following `<slot>` content, both the class and event-list
 
 ```html
 <div
-    class="some-class"
-    @click="existing"
+    class="some-class" <!-- becomes "new-class" -->
+    @click="existing" <!-- becomes "newOnClick" -->
 >
     some content
 </div>
@@ -86,8 +89,8 @@ For example, given the following `<slot>` content, both the class and event-list
 
 ```html
 <div
-    class="some-class" <!-- → "some-class new-class" -->
-    @click="existing" <!-- → "existing(); newOnClick()" -->
+    class="some-class" <!-- becomes "some-class new-class" -->
+    @click="existing" <!-- becomes "existing(); newOnClick()" -->
 >
     some content
 </div>
