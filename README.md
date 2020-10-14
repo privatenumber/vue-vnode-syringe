@@ -43,7 +43,7 @@ For example, given the following `<slot>` content, only the event-listener will 
 
 ```html
 <div class="some-class">
-	some content
+    some content
 </div>
 ```
 
@@ -78,10 +78,11 @@ Have you ever wanted to add classes or event-listeners on content passed into a 
 Just wrap the `<slot>` element with vNode Syringe, and start adding attributes to it and they will be inherited by every immediate element resolved by the slot.
 
 <details>
-	<summary>
-		<strong>Demo 1:</strong> Passing down attributes
-		<a href="https://jsfiddle.net/hirokiosame/k4wyuq9o/"><img align="center" src="https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue"></a>
-	</summary>
+    <summary>
+        <strong>Demo 1:</strong> Passing down attributes
+        <a href="https://jsfiddle.net/hirokiosame/k4wyuq9o/"><img align="center" src="https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue"></a>
+    </summary>
+
 
 In this demo, the `class="button-group__button"` attribute is passed down to all of its `<slot>` content.
 
@@ -115,10 +116,11 @@ _Usage.vue_
 
 
 <details>
-	<summary>
-		<strong>Demo 2:</strong> Merging and Overwriting classes
-		<a href="https://jsfiddle.net/hirokiosame/9qpygc8w/"><img align="center" src="https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue"></a>
-	</summary>
+    <summary>
+        <strong>Demo 2:</strong> Merging and Overwriting classes
+        <a href="https://jsfiddle.net/hirokiosame/9qpygc8w/"><img align="center" src="https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue"></a>
+    </summary>
+
 
 By default, vNode Syringe only adds the attribute/event-listener if it doesn't already exist. To merge with or overwrite the existing one, use the  `&` (merge) or `!` (overwrite) suffix.
 
