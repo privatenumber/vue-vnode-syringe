@@ -71,7 +71,7 @@ For example, given the following `<slot>` content, only the event-listener will 
 </vnode-syringe>
 ```
 
-### 👨🏻‍🏫 Examples
+## 👨🏻‍🏫 Examples
 Have you ever wanted to add classes or event-listeners on content passed into a slot? vNode Syringe lets you do just that!
 
 Just wrap the `<slot>` element with vNode Syringe, and start adding attributes to it and they will be inherited by every immediate element resolved by the slot.
