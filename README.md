@@ -86,8 +86,8 @@ For example, given the following `<slot>` content, both the class and event-list
 
 ```html
 <div
-    class="some-class" → "some-class new-class"
-    @click="existing" → "existing(); newOnClick()"
+    class="some-class" <!-- → "some-class new-class" -->
+    @click="existing" <!-- → "existing(); newOnClick()" -->
 >
     some content
 </div>
