@@ -27,7 +27,7 @@ npm i vue-vnode-syringe
 
 ## 💠 Merging strategies
 
-#### Fallback
+### Fallback
 The class `new-class` and event-listener `handeClick` only gets added if there isn't one added yet.
 This is the default behavior.
 
@@ -48,7 +48,7 @@ For example, given the following `<slot>` content, only the event-listener will 
 </div>
 ```
 
-#### Overwrite
+### Overwrite
 
 ```html
 <vnode-syringe
@@ -60,7 +60,7 @@ For example, given the following `<slot>` content, only the event-listener will 
 ```
 
 
-#### Merge
+### Merge
 
 ```html
 <vnode-syringe
