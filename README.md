@@ -79,7 +79,8 @@ Just wrap the `<slot>` element with vNode Syringe, and start adding attributes t
 
 <details>
 	<summary>
-		Demo 1: Passing down attributes [![JSFiddle Demo](https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue)](https://jsfiddle.net/hirokiosame/k4wyuq9o/)
+		<strong>Demo 1:</strong> Passing down attributes
+		<a href="https://jsfiddle.net/hirokiosame/k4wyuq9o/"><img src="https://img.shields.io/badge/JSFiddle-Open%20Demo-blue/?logo=jsfiddle&logoColor=lightblue"></a>
 	</summary>
 
 In this demo, the `class="button-group__button"` attribute is passed down to all of its `<slot>` content.
