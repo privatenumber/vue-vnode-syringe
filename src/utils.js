@@ -151,3 +151,20 @@ export function parseStyles(styleString) {
 			.filter(Boolean),
 	);
 }
+
+let VNode;
+export function cloneVNode(vnode) {
+	if (!VNode) {
+		VNode = Object.getPrototypeOf(vnode).constructor;
+	}
+
+	const clonedVNode = new VNode();
+	Object.assign(clonedVNode, vnode);
+
+	if (clonedVNode.componentOptions) {
+		clonedVNode.componentOptions = Object.assign({}, clonedVNode.componentOptions);
+		clonedVNode.componentOptions.propsData = Object.assign({}, clonedVNode.componentOptions.propsData);
+	}
+
+	return clonedVNode;
+}

@@ -6,6 +6,7 @@ import {
 	getStaticPair,
 	getPropsData,
 	merge,
+	cloneVNode,
 } from './utils';
 
 const vnodeSyringe = {
@@ -26,6 +27,8 @@ const vnodeSyringe = {
 		}
 
 		return children.map(vnode => {
+			vnode = cloneVNode(vnode);
+
 			if (vnode.tag) {
 				if (!vnode.data) {
 					vnode.data = {};
