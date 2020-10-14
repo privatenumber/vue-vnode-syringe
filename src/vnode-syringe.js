@@ -1,99 +1,62 @@
 import {
-	hyphenate,
-	hasOwn,
-	assign,
-	set,
-	Syringe,
-	parseStyleText,
-	normalizeModifiers,
-	classStyleProps,
+	isEmpty,
+	parseModifiers,
+	getStyle,
+	parseStyles,
+	getStaticPair,
+	getPropsData,
+	merge,
 } from './utils';
-
-const classStyles = Object.values(classStyleProps);
 
 const vnodeSyringe = {
 	functional: true,
 	render(h, {children, data}) {
-		if (!children) {
-			return undefined;
+		if (!children || isEmpty(data)) {
+			return children;
 		}
 
-		classStyles.forEach(prop => {
-			if (data[prop]) {
-				data[prop] = new Syringe(data[prop]);
-			}
-		});
+		const attrs = parseModifiers(data.attrs);
+		const on = parseModifiers(data.on);
+		const nativeOn = parseModifiers(data.nativeOn);
+		const _class = getStyle('class', attrs, data);
+		const style = getStyle('style', attrs, data);
 
-		normalizeModifiers(data.attrs, {
-			style(value, modifier) {
-				let prop = classStyleProps.M_style;
-				if (typeof value === 'string') {
-					prop = classStyleProps.M_staticStyle;
-					value = parseStyleText(value);
-				}
-
-				data[prop] = new Syringe(value, modifier);
-			},
-			class(value, modifier) {
-				const prop = typeof value === 'string' ? classStyleProps.M_staticClass : classStyleProps.M_class;
-				data[prop] = new Syringe(value, modifier);
-			},
-		});
-
-		normalizeModifiers(data.on);
+		if (style && typeof style.value === 'string') {
+			style.value = parseStyles(style.value);
+		}
 
 		return children.map(vnode => {
-			if (!vnode.tag) {
-				return vnode;
-			}
-
-			const d = Object.create(data);
-			const {componentOptions: comOptions} = vnode;
-
-			if (comOptions) {
-				const propOptions = comOptions.Ctor.options.props;
-				if (propOptions) {
-					d.attrs = Object.assign({}, d.attrs);
-
-					for (const prop in propOptions) {
-						if (!hasOwn(propOptions, prop)) {
-							continue;
-						}
-
-						[prop, hyphenate(prop)].some(propp => {
-							for (const key in d.attrs) {
-								if (hasOwn(d.attrs, key) && key === propp) {
-									set(comOptions.propsData, prop, d.attrs[key]);
-									delete d.attrs[key];
-									return true;
-								}
-							}
-
-							return false;
-						});
-					}
+			if (vnode.tag) {
+				if (!vnode.data) {
+					vnode.data = {};
 				}
 
-				// Logic from https://github.com/vuejs/vue/blob/v2.6.11/src/core/vdom/create-component.js#L168
-				comOptions.listeners = assign(comOptions.listeners || {}, d.on);
-				d.on = undefined;
-			}
+				const {
+					data: vnodeData,
+					componentOptions,
+				} = vnode;
 
-			if (!vnode.data) {
-				vnode.data = {};
-			}
+				// If component
+				if (componentOptions) {
+					const propsData = getPropsData(componentOptions, attrs);
+					merge(componentOptions.propsData, propsData);
+					componentOptions.listeners = merge(componentOptions.listeners || {}, on);
 
-			classStyles.forEach(prop => {
-				if (d[prop]) {
-					set(vnode.data, prop, d[prop]);
+					vnodeData.nativeOn = merge(vnodeData.nativeOn || {}, nativeOn);
+					vnodeData.on = vnodeData.nativeOn;
+				} else {
+					vnodeData.on = merge(vnodeData.on || {}, on);
 				}
-			});
 
-			['attrs', 'on'].forEach(prop => {
-				if (d[prop]) {
-					vnode.data[prop] = assign(vnode.data[prop] || {}, d[prop]);
-				}
-			});
+				vnodeData.attrs = merge(vnodeData.attrs || {}, attrs);
+
+				vnodeData.class = getStaticPair(vnodeData, 'class');
+				vnodeData.style = getStaticPair(vnodeData, 'style');
+				merge(vnodeData, {
+					class: _class,
+					style,
+				});
+			}
 
 			return vnode;
 		});

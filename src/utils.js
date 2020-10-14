@@ -1,110 +1,153 @@
-/* eslint-disable camelcase, prefer-spread, no-unused-expressions, unicorn/prevent-abbreviations */
-
-export const classStyleProps = {
-	M_staticClass: 'staticClass',
-	M_class: 'class',
-	M_staticStyle: 'staticStyle',
-	M_style: 'style',
+const FALLBACK = 0;
+const OVERWRITE = 1;
+const MERGE = 2;
+const MODIFIERS = {
+	'!': OVERWRITE,
+	'&': MERGE,
 };
-
-export function Syringe(value, modifier) {
-	this.M_value = value;
-	this.M_modifier = modifier;
-}
 
 const hyphenateRE = /\B([A-Z])/g;
-export const hyphenate = string => string.replace(hyphenateRE, '-$1').toLowerCase();
+const camelizeRE = /-(\w)/g;
 
-const {hasOwnProperty} = Object.prototype;
-export const hasOwn = (object, key) => hasOwnProperty.call(object, key);
-
-// From https://github.com/vuejs/vue/blob/6fe07eb/src/platforms/web/util/style.js#L5
-export const parseStyleText = cssText => {
-	const res = {};
-	const listDelimiter = /;(?![^(]*\))/g;
-	const propertyDelimiter = /:(.+)/;
-	cssText.split(listDelimiter).forEach(item => {
-		if (item) {
-			const temporary = item.split(propertyDelimiter);
-			temporary.length > 1 && (res[temporary[0].trim()] = temporary[1].trim());
-		}
-	});
-	return res;
-};
-
-export function normalizeModifiers(object, handlers) {
-	for (const key in object) {
-		if (!hasOwn(object, key)) {
-			continue;
-		}
-
-		const modifier = key[key.length - 1];
-		if (modifier === '&' || modifier === '!') {
-			const strippedKey = key.slice(0, -1);
-
-			const handler = handlers && handlers[strippedKey];
-			if (handler) {
-				handler(object[key], modifier);
-			} else {
-				object[strippedKey] = new Syringe(object[key], modifier);
-			}
-
-			delete object[key];
-		} else {
-			object[key] = new Syringe(object[key]);
-		}
-	}
+function hyphenate(string) {
+	return string.replace(hyphenateRE, '-$1').toLowerCase();
 }
 
-export const set = (object, attr, {M_modifier, M_value}) => {
-	// Overwrite
-	if (M_modifier === '!' || !hasOwn(object, attr)) {
-		object[attr] = M_value;
-		return;
+function camelize(string) {
+	return string.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '');
+}
+
+export function isEmpty(object) {
+	// eslint-disable-next-line no-unreachable-loop
+	for (const key in object) {
+		return false;
 	}
 
-	const base = object[attr];
-	if (M_modifier === '&' && base) {
-		if (attr === classStyleProps.M_class) {
-			object[attr] = [base, M_value];
-			return;
-		}
+	return true;
+}
 
-		if (attr === classStyleProps.M_staticClass) {
-			object[attr] += ` ${M_value}`;
-			return;
-		}
-
-		if (Array.isArray(base)) {
-			if (Array.isArray(M_value)) {
-				base.push.apply(base, M_value);
-			} else {
-				base.push(M_value);
+export function merge(dest, src) {
+	for (const key in src) {
+		if (src[key]) {
+			const {value, modifier} = src[key];
+			const destValue = dest[key];
+			if (
+				destValue === undefined ||
+				destValue === null ||
+				modifier === OVERWRITE
+			) {
+				dest[key] = value;
+			} else if (modifier === MERGE) {
+				if (Array.isArray(destValue)) {
+					// eslint-disable-next-line max-depth
+					if (Array.isArray(value)) {
+						destValue.push(...value);
+					} else {
+						destValue.push(value);
+					}
+				} else if (typeof destValue === 'object' && typeof value === 'object') {
+					Object.assign(destValue, value);
+				} else if (typeof destValue === 'function' && typeof value === 'function') {
+					dest[key] = function () {
+						Reflect.apply(destValue, this, arguments);
+						Reflect.apply(value, this, arguments);
+					};
+				} else {
+					dest[key] += value;
+				}
 			}
-
-			return;
-		}
-
-		if (typeof base === 'object') {
-			Object.assign(base, M_value);
-			return;
-		}
-
-		if (typeof base === 'function' && typeof M_value === 'function') {
-			object[attr] = function () {
-				Reflect.apply(base, this, arguments);
-				Reflect.apply(M_value, this, arguments);
-			};
-		}
-	}
-};
-
-export const assign = (target, object) => {
-	for (const attr in object) {
-		if (hasOwn(object, attr)) {
-			set(target, attr, object[attr]);
 		}
 	}
 
-	return target;
-};
+	return dest;
+}
+
+function findProp(attrs, prop) {
+	if (prop in attrs) {
+		return prop;
+	}
+
+	const kebab = hyphenate(prop);
+	if (kebab in attrs) {
+		return kebab;
+	}
+
+	return false;
+}
+
+export function getPropsData(componentOptions, attrs) {
+	const {props} = componentOptions.Ctor.options;
+	const propsData = {};
+
+	if (props) {
+		// Iterate over props to find attrs that are props
+		// By iterating over props instead of attrs, we can leverage Vue's camelization
+		for (const prop in props) {
+			const isProp = findProp(attrs, prop);
+			if (isProp) {
+				propsData[prop] = attrs[isProp];
+				delete attrs[isProp];
+			}
+		}
+	}
+
+	return propsData;
+}
+
+export function parseModifiers(object) {
+	const normalized = {};
+	for (let key in object) {
+		const value = object[key];
+		let modifier = MODIFIERS[key.slice(-1)];
+		if (modifier) {
+			key = key.slice(0, -1);
+		} else {
+			modifier = FALLBACK;
+		}
+
+		normalized[key] = {value, modifier};
+	}
+
+	return normalized;
+}
+
+export function getStaticPair(object, name) {
+	const staticProp = camelize('static-' + name);
+	const pair = [object[staticProp], object[name]].filter(Boolean).flat(Infinity);
+	if (pair.length === 0) {
+		return undefined;
+	}
+
+	delete object[staticProp];
+	return pair;
+}
+
+export function getStyle(name, attrs, data) {
+	const value_ = attrs[name];
+	if (value_) {
+		delete attrs[name];
+		return value_;
+	}
+
+	const pair = getStaticPair(data, name);
+	if (!pair) {
+		return undefined;
+	}
+
+	return {
+		value: pair,
+		modifier: FALLBACK,
+	};
+}
+
+export function parseStyles(styleString) {
+	return Object.fromEntries(
+		styleString
+			.split(';')
+			.map(pair => {
+				const [property, value] = pair.split(':');
+				return (property && value) && [camelize(property.trim()), value.trim()];
+			})
+			.filter(Boolean),
+	);
+}
