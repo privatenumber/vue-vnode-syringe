@@ -18,7 +18,7 @@ Add _attributes_ and _event-listeners_ to `<slot>` content
 ## 🙋‍♂️ Why?
 - **🔥 Add attributes & event-listeners** to content passed into the `<slot>`!
 - **🧠 Smart merging strategies** Pick between merging, overwriting, or falling-back!
-- **🐥 Tiny** `985 B` minzipped!
+- **🐥 Tiny** `1.04 KB` minzipped!
 
 ## 🚀 Install
 ```sh
