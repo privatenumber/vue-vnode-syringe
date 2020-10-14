@@ -84,6 +84,7 @@ Just wrap the `<slot>` element with vNode Syringe, and start adding attributes t
     </summary>
 
 <br>
+
 In this demo, the `class="button-group__button"` attribute is passed down to all of its `<slot>` content.
 
 _ButtonGroup.vue_
@@ -122,6 +123,7 @@ _Usage.vue_
     </summary>
 
 <br>
+
 By default, vNode Syringe only adds the attribute/event-listener if it doesn't already exist. To merge with or overwrite the existing one, use the  `&` (merge) or `!` (overwrite) suffix.
 
 _ButtonGroup.vue_
