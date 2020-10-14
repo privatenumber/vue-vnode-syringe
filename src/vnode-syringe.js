@@ -1,28 +1,30 @@
+const FALLBACK = 0;
+const OVERWRITE = 1;
+const MERGE = 2;
+const MODIFIERS = {
+	'!': OVERWRITE,
+	'&': MERGE,
+};
 
-const isEmpty = object => {
+const hyphenateRE = /\B([A-Z])/g;
+const camelizeRE = /-(\w)/g;
+
+function hyphenate(string) {
+	return string.replace(hyphenateRE, '-$1').toLowerCase();
+}
+
+function camelize(string) {
+	return string.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '');
+}
+
+function isEmpty(object) {
 	// eslint-disable-next-line no-unreachable-loop
 	for (const key in object) {
 		return false;
 	}
 
 	return true;
-};
-
-const mergeStatic = (data, name) => {
-	const staticProp = 'static' + name[0].toUpperCase() + name.slice(1);
-	if (!data[name] && !data[staticProp]) {
-		return;
-	}
-
-	data[name] = [data[staticProp], data[name]].filter(Boolean).flat(Infinity);
-	if (data[name].length === 0) {
-		data[name] = undefined;
-	}
-
-	delete data[staticProp];
-};
-
-const {hasOwnProperty} = Object.prototype;
+}
 
 function merge(dest, src) {
 	for (const key in src) {
@@ -59,19 +61,13 @@ function merge(dest, src) {
 	return dest;
 }
 
-const hyphenateRE = /\B([A-Z])/g;
-const hyphenate = string => string.replace(hyphenateRE, '-$1').toLowerCase();
-
-const camelizeRE = /-(\w)/g;
-const camelize = string => string.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '');
-
 function findProp(attrs, prop) {
-	if (hasOwnProperty.call(attrs, prop)) {
+	if (prop in attrs) {
 		return prop;
 	}
 
 	const kebab = hyphenate(prop);
-	if (hasOwnProperty.call(attrs, kebab)) {
+	if (kebab in attrs) {
 		return kebab;
 	}
 
@@ -97,20 +93,11 @@ function getPropsData(componentOptions, attrs) {
 	return propsData;
 }
 
-const FALLBACK = 0;
-const OVERWRITE = 1;
-const MERGE = 2;
-
-const modifiers = {
-	'!': OVERWRITE,
-	'&': MERGE,
-};
-
 function parseModifiers(object) {
 	const normalized = {};
 	for (let key in object) {
 		const value = object[key];
-		let modifier = modifiers[key.slice(-1)];
+		let modifier = MODIFIERS[key.slice(-1)];
 		if (modifier) {
 			key = key.slice(0, -1);
 		} else {
@@ -123,25 +110,46 @@ function parseModifiers(object) {
 	return normalized;
 }
 
-const getStyle = (name, attrs, data) => {
+function getStaticPair(object, name) {
+	const staticProp = camelize('static-' + name);
+	const pair = [object[staticProp], object[name]].filter(Boolean).flat(Infinity);
+	if (pair.length === 0) {
+		return undefined;
+	}
+
+	delete object[staticProp];
+	return pair;
+}
+
+function getStyle(name, attrs, data) {
 	const value_ = attrs[name];
 	if (value_) {
 		delete attrs[name];
 		return value_;
 	}
 
-	const staticProp = 'static' + name[0].toUpperCase() + name.slice(1);
-	const value = [data[staticProp], data[name]].filter(Boolean).flat(Infinity);
-
-	if (!value.length) {
+	const pair = getStaticPair(data, name);
+	if (!pair) {
 		return undefined;
 	}
 
 	return {
-		value,
+		value: pair,
 		modifier: FALLBACK,
 	};
-};
+}
+
+function parseStyles(styleString) {
+	return Object.fromEntries(
+		styleString
+			.split(';')
+			.map(pair => {
+				const [property, value] = pair.split(':');
+				return (property && value) && [camelize(property.trim()), value.trim()];
+			})
+			.filter(Boolean),
+	);
+}
 
 const vnodeSyringe = {
 	functional: true,
@@ -157,10 +165,7 @@ const vnodeSyringe = {
 		const style = getStyle('style', attrs, data);
 
 		if (style && typeof style.value === 'string') {
-			style.value = Object.fromEntries(style.value.split(';').filter(Boolean).map(pair => {
-				const [key, value] = pair.split(':');
-				return [camelize(key.trim()), value.trim()];
-			}));
+			style.value = parseStyles(style.value);
 		}
 
 		return children.map(vnode => {
@@ -188,8 +193,8 @@ const vnodeSyringe = {
 
 				vnodeData.attrs = merge(vnodeData.attrs || {}, attrs);
 
-				mergeStatic(vnodeData, 'class');
-				mergeStatic(vnodeData, 'style');
+				vnodeData.class = getStaticPair(vnodeData, 'class');
+				vnodeData.style = getStaticPair(vnodeData, 'style');
 				merge(vnodeData, {
 					class: _class,
 					style,
