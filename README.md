@@ -28,7 +28,7 @@ npm i vue-vnode-syringe
 ## 💠 Merging strategies
 
 ### Fallback
-This is the _default behavior_, and the class `new-class` and event-listener `newOnClick` only gets added if there isn't one added yet.
+This is the _default behavior_. The class `new-class` and event-listener `newOnClick` only gets added if there isn't one added yet.
 
 ```html
 <vnode-syringe
