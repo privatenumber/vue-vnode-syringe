@@ -28,18 +28,18 @@ npm i vue-vnode-syringe
 ## 💠 Merging strategies
 
 ### Fallback
-This is the _default behavior_, and the class `new-class` and event-listener `handeClick` only gets added if there isn't one added yet.
+This is the _default behavior_, and the class `new-class` and event-listener `newOnClick` only gets added if there isn't one added yet.
 
 ```html
 <vnode-syringe
     class="new-class"
-    @click="handleClick"
+    @click="newOnClick"
 >
     <slot />
 </vnode-syringe>
 ```
 
-For example, given the following `<slot>` content, only the event-listener will be added:
+For example, given the following `<slot>` content, only the event-listener `newOnClick` will be added:
 
 ```html
 <div class="some-class">
@@ -53,12 +53,22 @@ Add `!` at the end of the attribute or event-listener to overwrite what exists.
 ```html
 <vnode-syringe
     class!="new-class"
-    @click!="handleClick"
+    @click!="newOnClick"
 >
     <slot />
 </vnode-syringe>
 ```
 
+For example, given the following `<slot>` content, both the class and event-listener will _overwrite_ the existing class and event-listener.
+
+```html
+<div
+    class="some-class"
+    @click="existing"
+>
+    some content
+</div>
+```
 
 ### Merge `&`
 Add `&` at the end of the attribute or event-listener to merge with what exists.
@@ -66,10 +76,21 @@ Add `&` at the end of the attribute or event-listener to merge with what exists.
 ```html
 <vnode-syringe
     class&="new-class"
-    @click&="handleClick"
+    @click&="newOnClick"
 >
     <slot />
 </vnode-syringe>
+```
+
+For example, given the following `<slot>` content, both the class and event-listener will _merge_ with the existing class and event-listener. When merging event-listeners, both event-listeners will be called.
+
+```html
+<div
+    class="some-class"
+    @click="existing"
+>
+    some content
+</div>
 ```
 
 ## 👨🏻‍🏫 Examples
