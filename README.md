@@ -1,26 +1,33 @@
 # :syringe: vNode Syringe [![Latest version](https://badgen.net/npm/v/vue-vnode-syringe)](https://npm.im/vue-vnode-syringe) [![Monthly downloads](https://badgen.net/npm/dm/vue-vnode-syringe)](https://npm.im/vue-vnode-syringe) [![Install size](https://packagephobia.now.sh/badge?p=vue-vnode-syringe)](https://packagephobia.now.sh/result?p=vue-vnode-syringe) [![Bundle size](https://badgen.net/bundlephobia/minzip/vue-vnode-syringe)](https://bundlephobia.com/result?p=vue-vnode-syringe)
-> 🧬 Mutate your vNodes with vNode Syringe 💉
 
-## :rocket: Quick setup
-#### Install
+Add attributes or event-listeners to component `<slot>`s
+
+```html
+<template>
+	<div>
+		<vnode-syringe
+			class="new-class"
+			@click="handleClick"
+		>
+			<slot />
+		</vnode-syringe>
+	</div>
+</template>
+```
+
+## 🙋‍♂️ Why?
+- **🔥 Add attributes & event-listeners** to content passed into the `<slot>`!
+- **🧠 Smart merging strategies** Pick between merging, overwriting, or falling-back!
+- **🐥 Tiny** `985 B` minzipped!
+
+## 🚀 Install
 ```sh
 npm i vue-vnode-syringe
 ```
 
-#### Import and use as a Vue component
-```js
-import vnodeSyringe from 'vue-vnode-syringe';
+## 👨🏻‍🏫 Examples
 
-export default {
-	...
-	components: {
-		vnodeSyringe
-	}
-	...
-}
-```
-
-## :beginner: Use case
+### :beginner: Use case
 Have you ever wanted to add classes or event-listeners on content passed into a slot? vNode Syringe lets you do just that!
 
 Just wrap the `<slot>` element with vNode Syringe, and start adding attributes to it and they will be inherited by every immediate element resolved by the slot.
@@ -147,3 +154,11 @@ _Usage.vue_
 	Hello <!-- Won't be rendered -->
 </button-group>
 ```
+
+## 👨‍👩‍👧 Related
+- [vue-proxi](https://github.com/privatenumber/vue-proxi) - 💠 Tiny proxy component
+- [vue-subslot](https://github.com/privatenumber/vue-subslot) - 💍 Pick 'n choose what you want from a slot passed into your Vue component
+- [vue-pseudo-window](https://github.com/privatenumber/vue-pseudo-window) - 🖼 Declaratively interface window/document in your Vue template
+- [vue-vnode-syringe](https://github.com/privatenumber/vue-v) - render vNodes via component template
+- [vue-frag](https://github.com/privatenumber/vue-frag) - 🤲 Directive to return multiple root elements
+
