@@ -25,7 +25,7 @@ Add _attributes_ and _event-listeners_ to component `<slot>`s
 npm i vue-vnode-syringe
 ```
 
-## 👨🏻‍🏫 Merging strategies
+## 💠 Merging strategies
 
 #### Fallback
 The class `new-class` and event-listener `handeClick` only gets added if there isn't one added yet.
@@ -71,10 +71,7 @@ For example, given the following `<slot>` content, only the event-listener will 
 </vnode-syringe>
 ```
 
-
-
-
-### :beginner: Use case
+### 👨🏻‍🏫 Examples
 Have you ever wanted to add classes or event-listeners on content passed into a slot? vNode Syringe lets you do just that!
 
 Just wrap the `<slot>` element with vNode Syringe, and start adding attributes to it and they will be inherited by every immediate element resolved by the slot.
