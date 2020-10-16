@@ -16,9 +16,9 @@ Add _attributes_ and _event-listeners_ to `<slot>` content
 ```
 
 ## 🙋‍♂️ Why?
-- **🔥 Add attributes & event-listeners** to content passed into the `<slot>`!
-- **🧠 Smart merging strategies** Pick between merging, overwriting, or falling-back!
-- **🐥 Tiny** `1.04 KB` minzipped!
+- **🔥 Set or overwrite keys, class/style, attributes, props & event-listeners** on content received from the `<slot>`!
+- **🧠 Smart merging strategies** between merging, overwriting, or falling-back!
+- **🐥 Tiny** `1.05 KB` minzipped!
 
 ## 🚀 Install
 ```sh
