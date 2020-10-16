@@ -91,6 +91,52 @@ describe('fallback', () => {
 			expect(wrapper.html()).toBe('<div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="some-class" style="color: red;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div a="1" b="2" c="3" class="static-class dynamic-class" style="color: blue;"></div>\n  <div b="c" a="1" c="3" class="static-class dynamic-class" style="color: red;"></div>\n</div>');
 		});
 
+		test('apply key', () => {
+			const VnodeAnalyze = {
+				render() {
+					const [firstVnode] = this.$slots.default;
+					expect(firstVnode.key).toBe('1111');
+				},
+			};
+
+			mount({
+				template: `
+					<vnode-analyze>
+						<vnode-syringe key="1111">
+							<div/>
+						</vnode-syringe>
+					</vnode-analyze>
+				`,
+				components: {
+					VnodeAnalyze,
+					VnodeSyringe,
+				},
+			});
+		});
+
+		test('preserve existing key', () => {
+			const VnodeAnalyze = {
+				render() {
+					const [firstVnode] = this.$slots.default;
+					expect(firstVnode.key).toBe('2222');
+				},
+			};
+
+			mount({
+				template: `
+					<vnode-analyze>
+						<vnode-syringe key="1111">
+							<div key="2222" />
+						</vnode-syringe>
+					</vnode-analyze>
+				`,
+				components: {
+					VnodeAnalyze,
+					VnodeSyringe,
+				},
+			});
+		});
+
 		describe('event-handlers', () => {
 			test('apply new @handler', async () => {
 				const onClick = jest.fn();

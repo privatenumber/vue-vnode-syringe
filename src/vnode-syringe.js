@@ -1,11 +1,13 @@
 import {
 	isEmpty,
 	parseModifiers,
-	getStyle,
 	parseStyles,
 	getStaticPair,
 	getPropsData,
 	merge,
+	set,
+	getAndRemoveAttr,
+	createFallback,
 	cloneVNode,
 } from './utils';
 
@@ -19,8 +21,9 @@ const vnodeSyringe = {
 		const attrs = parseModifiers(data.attrs);
 		const on = parseModifiers(data.on);
 		const nativeOn = parseModifiers(data.nativeOn);
-		const _class = getStyle('class', attrs, data);
-		const style = getStyle('style', attrs, data);
+		const _class = getAndRemoveAttr(attrs, 'class') || createFallback(getStaticPair(data, 'class'));
+		const style = getAndRemoveAttr(attrs, 'style') || createFallback(getStaticPair(data, 'style'));
+		const key = getAndRemoveAttr(attrs, 'key') || createFallback(data.key);
 
 		if (style && typeof style.value === 'string') {
 			style.value = parseStyles(style.value);
@@ -42,23 +45,25 @@ const vnodeSyringe = {
 				// If component
 				if (componentOptions) {
 					const propsData = getPropsData(componentOptions, attrs);
-					merge(componentOptions.propsData, propsData);
-					componentOptions.listeners = merge(componentOptions.listeners || {}, on);
+					merge(componentOptions, 'propsData', propsData);
+					merge(componentOptions, 'listeners', on);
 
-					vnodeData.nativeOn = merge(vnodeData.nativeOn || {}, nativeOn);
+					merge(vnodeData, 'nativeOn', nativeOn);
 					vnodeData.on = vnodeData.nativeOn;
 				} else {
-					vnodeData.on = merge(vnodeData.on || {}, on);
+					merge(vnodeData, 'on', on);
 				}
 
-				vnodeData.attrs = merge(vnodeData.attrs || {}, attrs);
+				merge(vnodeData, 'attrs', attrs);
 
 				vnodeData.class = getStaticPair(vnodeData, 'class');
 				vnodeData.style = getStaticPair(vnodeData, 'style');
-				merge(vnodeData, {
+				merge(vnode, 'data', {
 					class: _class,
 					style,
 				});
+
+				set(vnode, 'key', key);
 			}
 
 			return vnode;

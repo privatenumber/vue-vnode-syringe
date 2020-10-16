@@ -90,6 +90,52 @@ describe('merge', () => {
 			expect(wrapper.html()).toBe('<div>\n  <div a="31" b="2" c="3" class="some-class static-class" style="font: serif;"></div>\n  <div a="1" b="2" c="3" class="some-class static-class" style="font: serif;"></div>\n  <div b="3" a="1" c="3" class="static-class" style="color: blue; font: serif;"></div>\n  <div a="1" b="2" c="3" class="static-class" style="color: blue; font: serif;"></div>\n  <div d="1" b="c2" a="1" c="3" class="static-class" style="font: serif;"></div>\n</div>');
 		});
 
+		test('apply key', () => {
+			const VnodeAnalyze = {
+				render() {
+					const [firstVnode] = this.$slots.default;
+					expect(firstVnode.key).toBe('1111');
+				},
+			};
+
+			mount({
+				template: `
+					<vnode-analyze>
+						<vnode-syringe key&="1111">
+							<div/>
+						</vnode-syringe>
+					</vnode-analyze>
+				`,
+				components: {
+					VnodeAnalyze,
+					VnodeSyringe,
+				},
+			});
+		});
+
+		test('merge existing key', () => {
+			const VnodeAnalyze = {
+				render() {
+					const [firstVnode] = this.$slots.default;
+					expect(firstVnode.key).toBe('22221111');
+				},
+			};
+
+			mount({
+				template: `
+					<vnode-analyze>
+						<vnode-syringe key&="1111">
+							<div key="2222" />
+						</vnode-syringe>
+					</vnode-analyze>
+				`,
+				components: {
+					VnodeAnalyze,
+					VnodeSyringe,
+				},
+			});
+		});
+
 		describe('event-handlers', () => {
 			test('apply new @handler', async () => {
 				const onClick = jest.fn();
