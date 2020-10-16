@@ -58,11 +58,8 @@ const vnodeSyringe = {
 
 				vnodeData.class = getStaticPair(vnodeData, 'class');
 				vnodeData.style = getStaticPair(vnodeData, 'style');
-				merge(vnode, 'data', {
-					class: _class,
-					style,
-				});
-
+				set(vnodeData, 'class', _class);
+				set(vnodeData, 'style', style);
 				set(vnode, 'key', key);
 			}
 
