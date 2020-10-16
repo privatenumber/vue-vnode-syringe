@@ -26,40 +26,49 @@ export function isEmpty(object) {
 	return true;
 }
 
-export function merge(dest, src) {
-	for (const key in src) {
-		if (src[key]) {
-			const {value, modifier} = src[key];
-			const destValue = dest[key];
-			if (
-				destValue === undefined ||
-				destValue === null ||
-				modifier === OVERWRITE
-			) {
-				dest[key] = value;
-			} else if (modifier === MERGE) {
-				if (Array.isArray(destValue)) {
-					// eslint-disable-next-line max-depth
-					if (Array.isArray(value)) {
-						destValue.push(...value);
-					} else {
-						destValue.push(value);
-					}
-				} else if (typeof destValue === 'object' && typeof value === 'object') {
-					Object.assign(destValue, value);
-				} else if (typeof destValue === 'function' && typeof value === 'function') {
-					dest[key] = function () {
-						Reflect.apply(destValue, this, arguments);
-						Reflect.apply(value, this, arguments);
-					};
-				} else {
-					dest[key] += value;
-				}
-			}
-		}
+export function set(dest, key, valueData) {
+	if (!valueData) {
+		return;
 	}
 
-	return dest;
+	const {value, modifier} = valueData;
+	const destValue = dest[key];
+	if (
+		destValue === undefined ||
+		destValue === null ||
+		modifier === OVERWRITE
+	) {
+		dest[key] = value;
+	} else if (modifier === MERGE) {
+		if (Array.isArray(destValue)) {
+			if (Array.isArray(value)) {
+				destValue.push(...value);
+			} else {
+				destValue.push(value);
+			}
+		} else if (typeof destValue === 'object' && typeof value === 'object') {
+			Object.assign(destValue, value);
+		} else if (typeof destValue === 'function' && typeof value === 'function') {
+			dest[key] = function () {
+				Reflect.apply(destValue, this, arguments);
+				Reflect.apply(value, this, arguments);
+			};
+		} else {
+			dest[key] += value;
+		}
+	}
+}
+
+export function merge(destObject, property, src) {
+	if (!destObject[property]) {
+		destObject[property] = {};
+	}
+
+	const dest = destObject[property];
+
+	for (const key in src) {
+		set(dest, key, src[key]);
+	}
 }
 
 function findProp(attrs, prop) {
@@ -122,20 +131,17 @@ export function getStaticPair(object, name) {
 	return pair;
 }
 
-export function getStyle(name, attrs, data) {
-	const value_ = attrs[name];
-	if (value_) {
-		delete attrs[name];
-		return value_;
+export function getAndRemoveAttr(attrs, attrName) {
+	const value = attrs[attrName];
+	if (value) {
+		delete attrs[attrName];
+		return value;
 	}
+}
 
-	const pair = getStaticPair(data, name);
-	if (!pair) {
-		return undefined;
-	}
-
-	return {
-		value: pair,
+export function createFallback(value) {
+	return value && {
+		value,
 		modifier: FALLBACK,
 	};
 }

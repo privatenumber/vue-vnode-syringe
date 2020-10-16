@@ -1,6 +1,8 @@
 # :syringe: vNode Syringe [![Latest version](https://badgen.net/npm/v/vue-vnode-syringe)](https://npm.im/vue-vnode-syringe) [![Monthly downloads](https://badgen.net/npm/dm/vue-vnode-syringe)](https://npm.im/vue-vnode-syringe) [![Install size](https://packagephobia.now.sh/badge?p=vue-vnode-syringe)](https://packagephobia.now.sh/result?p=vue-vnode-syringe) [![Bundle size](https://badgen.net/bundlephobia/minzip/vue-vnode-syringe)](https://bundlephobia.com/result?p=vue-vnode-syringe)
 
-Add _attributes_ and _event-listeners_ to `<slot>` content
+Add _attributes_ and _event-listeners_ to `<slot>` content.
+
+Supports `key`, `class`/`style`, `attrs`, `props` & `listeners`!
 
 ```html
 <template>
@@ -16,9 +18,9 @@ Add _attributes_ and _event-listeners_ to `<slot>` content
 ```
 
 ## 🙋‍♂️ Why?
-- **🔥 Add attributes & event-listeners** to content passed into the `<slot>`!
+- **🔥 Set or overwrite attributes & event-listeners** on content received from the `<slot>`!
 - **🧠 Smart merging strategies** Pick between merging, overwriting, or falling-back!
-- **🐥 Tiny** `1.04 KB` minzipped!
+- **🐥 Tiny** `1.05 KB` minzipped!
 
 ## 🚀 Install
 ```sh
