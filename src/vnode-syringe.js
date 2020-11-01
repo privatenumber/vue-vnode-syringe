@@ -37,6 +37,7 @@ const vnodeSyringe = {
 					vnode.data = {};
 				}
 
+				const _attrs = Object.assign({}, attrs);
 				const {
 					data: vnodeData,
 					componentOptions,
@@ -44,7 +45,7 @@ const vnodeSyringe = {
 
 				// If component
 				if (componentOptions) {
-					const propsData = getPropsData(componentOptions, attrs);
+					const propsData = getPropsData(componentOptions, _attrs);
 					merge(componentOptions, 'propsData', propsData);
 					merge(componentOptions, 'listeners', on);
 
@@ -54,7 +55,7 @@ const vnodeSyringe = {
 					merge(vnodeData, 'on', on);
 				}
 
-				merge(vnodeData, 'attrs', attrs);
+				merge(vnodeData, 'attrs', _attrs);
 
 				vnodeData.class = getStaticPair(vnodeData, 'class');
 				vnodeData.style = getStaticPair(vnodeData, 'style');
