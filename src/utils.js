@@ -143,34 +143,30 @@ export function getPropsData(componentOptions, attrs) {
 	return propsData;
 }
 
-const getDirectiveModifier = modifiers => {
-	for (const modifier in modifiers) {
-		const hasModifier = MODIFIERS[modifier];
-		if (hasModifier) {
-			delete modifiers[modifier];
-			return hasModifier;
-		}
-	}
-
-	return FALLBACK;
-};
-
 export function parseDirectives(directives) {
 	if (directives) {
-		return directives.map(value => ({
-			value,
-			modifier: getDirectiveModifier(value.modifiers),
-		}));
+		const dirs = {};
+		directives.forEach(directive => {
+			dirs[directive.name] = directive;
+		});
+		return dirs;
 	}
 }
 
-export function parseModifiers(object) {
+const stripModifier = string => string.slice(0, -1);
+
+export function parseModifiers(object, isDirective) {
 	const normalized = {};
 	for (let key in object) {
 		const value = object[key];
 		let modifier = MODIFIERS[key.slice(-1)];
 		if (modifier) {
-			key = key.slice(0, -1);
+			key = stripModifier(key);
+
+			if (isDirective) {
+				value.name = stripModifier(value.name);
+				value.rawName = stripModifier(value.rawName);
+			}
 		} else {
 			modifier = FALLBACK;
 		}

@@ -247,7 +247,7 @@ describe('merge', () => {
 		test('apply v-show', () => {
 			const wrapper = mount({
 				template: `
-					<vnode-syringe v-show.&="false">
+					<vnode-syringe v-show&="false">
 						<div/>
 					</vnode-syringe>
 				`,
@@ -262,7 +262,7 @@ describe('merge', () => {
 		test('preserve existing v-show', () => {
 			const wrapper = mount({
 				template: `
-					<vnode-syringe v-show.&="true">
+					<vnode-syringe v-show&="true">
 						<div v-show="false"/>
 					</vnode-syringe>
 				`,
@@ -283,7 +283,7 @@ describe('merge', () => {
 
 			const wrapper = mount({
 				template: `
-					<vnode-syringe v-title.&="'hello world'">
+					<vnode-syringe v-title&="'hello world'">
 						<div/>
 					</vnode-syringe>
 				`,
@@ -307,7 +307,7 @@ describe('merge', () => {
 
 			const wrapper = mount({
 				template: `
-					<vnode-syringe v-title.&="'hello world'">
+					<vnode-syringe v-title&="'hello world'">
 						<div v-title="'goodbye world'" />
 					</vnode-syringe>
 				`,

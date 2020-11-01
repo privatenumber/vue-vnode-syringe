@@ -245,7 +245,7 @@ describe('overwrite', () => {
 		test('apply v-show', () => {
 			const wrapper = mount({
 				template: `
-					<vnode-syringe v-show.!="false">
+					<vnode-syringe v-show!="false">
 						<div/>
 					</vnode-syringe>
 				`,
@@ -260,7 +260,7 @@ describe('overwrite', () => {
 		test('preserve existing v-show', () => {
 			const wrapper = mount({
 				template: `
-					<vnode-syringe v-show.!="false">
+					<vnode-syringe v-show!="false">
 						<div v-show="true"/>
 					</vnode-syringe>
 				`,
@@ -281,7 +281,7 @@ describe('overwrite', () => {
 
 			const wrapper = mount({
 				template: `
-					<vnode-syringe v-title.!="'hello world'">
+					<vnode-syringe v-title!="'hello world'">
 						<div/>
 					</vnode-syringe>
 				`,
@@ -305,7 +305,7 @@ describe('overwrite', () => {
 
 			const wrapper = mount({
 				template: `
-					<vnode-syringe v-title.!="'hello world'">
+					<vnode-syringe v-title!="'hello world'">
 						<div v-title="'goodbye world'" />
 					</vnode-syringe>
 				`,

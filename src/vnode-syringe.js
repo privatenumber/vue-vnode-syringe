@@ -26,7 +26,8 @@ const vnodeSyringe = {
 		const _class = getAndRemoveAttr(attrs, 'class') || createFallback(getStaticPair(data, 'class'));
 		const style = getAndRemoveAttr(attrs, 'style') || createFallback(getStaticPair(data, 'style'));
 		const key = getAndRemoveAttr(attrs, 'key') || createFallback(data.key);
-		const directives = parseDirectives(data.directives);
+
+		const directives = parseModifiers(parseDirectives(data.directives), true);
 
 		if (style && typeof style.value === 'string') {
 			style.value = parseStyles(style.value);
@@ -67,7 +68,7 @@ const vnodeSyringe = {
 				set(vnode, 'key', key);
 
 				if (directives) {
-					assignDirectives(vnodeData, directives);
+					assignDirectives(vnodeData, Object.values(directives));
 					// Expose locally registered directives?
 					// Object.assign(vnode.context.$options.directives, parent.$options.directives);
 				}
