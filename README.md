@@ -18,9 +18,9 @@ Supports `key`, `class`/`style`, `attrs`, `props` & `listeners`!
 ```
 
 ## 🙋‍♂️ Why?
-- **🔥 Set or overwrite attributes & event-listeners** on content received from the `<slot>`!
-- **🧠 Smart merging strategies** Pick between merging, overwriting, or falling-back!
-- **🐥 Tiny** `1.05 KB` minzipped!
+- **🔥 Set or overwrite attributes, event-listeners, & directives** on content received from the `<slot>`!
+- **🧠 Smart merging strategies** Merge, overwrite, or fallback!
+- **🐥 Tiny** `1.25 KB` minzipped!
 
 ## 🚀 Install
 ```sh
