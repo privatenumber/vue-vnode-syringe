@@ -1,10 +1,12 @@
 import {
 	isEmpty,
+	parseDirectives,
 	parseModifiers,
 	parseStyles,
 	getStaticPair,
 	getPropsData,
-	merge,
+	assign,
+	assignDirectives,
 	set,
 	getAndRemoveAttr,
 	createFallback,
@@ -24,6 +26,7 @@ const vnodeSyringe = {
 		const _class = getAndRemoveAttr(attrs, 'class') || createFallback(getStaticPair(data, 'class'));
 		const style = getAndRemoveAttr(attrs, 'style') || createFallback(getStaticPair(data, 'style'));
 		const key = getAndRemoveAttr(attrs, 'key') || createFallback(data.key);
+		const directives = parseDirectives(data.directives);
 
 		if (style && typeof style.value === 'string') {
 			style.value = parseStyles(style.value);
@@ -46,22 +49,28 @@ const vnodeSyringe = {
 				// If component
 				if (componentOptions) {
 					const propsData = getPropsData(componentOptions, _attrs);
-					merge(componentOptions, 'propsData', propsData);
-					merge(componentOptions, 'listeners', on);
+					assign(componentOptions, 'propsData', propsData);
+					assign(componentOptions, 'listeners', on);
 
-					merge(vnodeData, 'nativeOn', nativeOn);
+					assign(vnodeData, 'nativeOn', nativeOn);
 					vnodeData.on = vnodeData.nativeOn;
 				} else {
-					merge(vnodeData, 'on', on);
+					assign(vnodeData, 'on', on);
 				}
 
-				merge(vnodeData, 'attrs', _attrs);
+				assign(vnodeData, 'attrs', _attrs);
 
 				vnodeData.class = getStaticPair(vnodeData, 'class');
 				vnodeData.style = getStaticPair(vnodeData, 'style');
 				set(vnodeData, 'class', _class);
 				set(vnodeData, 'style', style);
 				set(vnode, 'key', key);
+
+				if (directives) {
+					assignDirectives(vnodeData, directives);
+					// Expose locally registered directives?
+					// Object.assign(vnode.context.$options.directives, parent.$options.directives);
+				}
 			}
 
 			return vnode;

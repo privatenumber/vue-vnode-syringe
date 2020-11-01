@@ -26,6 +26,31 @@ export function isEmpty(object) {
 	return true;
 }
 
+function merge(dest, src) {
+	if (Array.isArray(dest)) {
+		if (Array.isArray(src)) {
+			dest.push(...src);
+		} else {
+			dest.push(src);
+		}
+
+		return dest;
+	}
+
+	if (typeof dest === 'object' && typeof src === 'object') {
+		return Object.assign(dest, src);
+	}
+
+	if (typeof dest === 'function' && typeof src === 'function') {
+		return function () {
+			Reflect.apply(dest, this, arguments);
+			Reflect.apply(src, this, arguments);
+		};
+	}
+
+	return dest + src;
+}
+
 export function set(dest, key, valueData) {
 	if (!valueData) {
 		return;
@@ -40,26 +65,11 @@ export function set(dest, key, valueData) {
 	) {
 		dest[key] = value;
 	} else if (modifier === MERGE) {
-		if (Array.isArray(destValue)) {
-			if (Array.isArray(value)) {
-				destValue.push(...value);
-			} else {
-				destValue.push(value);
-			}
-		} else if (typeof destValue === 'object' && typeof value === 'object') {
-			Object.assign(destValue, value);
-		} else if (typeof destValue === 'function' && typeof value === 'function') {
-			dest[key] = function () {
-				Reflect.apply(destValue, this, arguments);
-				Reflect.apply(value, this, arguments);
-			};
-		} else {
-			dest[key] += value;
-		}
+		dest[key] = merge(destValue, value);
 	}
 }
 
-export function merge(destObject, property, src) {
+export function assign(destObject, property, src) {
 	if (!destObject[property]) {
 		destObject[property] = {};
 	}
@@ -69,6 +79,36 @@ export function merge(destObject, property, src) {
 	for (const key in src) {
 		set(dest, key, src[key]);
 	}
+}
+
+const findIndex = (array, predicate) => {
+	// eslint-disable-next-line unicorn/no-for-loop
+	for (let i = 0; i < array.length; i++) {
+		if (predicate(array[i])) {
+			return i;
+		}
+	}
+
+	return -1;
+};
+
+export function assignDirectives(vnodeData, directives) {
+	if (!vnodeData.directives) {
+		vnodeData.directives = [];
+	}
+
+	const {directives: vnodeDirectives} = vnodeData;
+	directives.forEach(({value, modifier}) => {
+		const existsIdx = findIndex(vnodeDirectives, d => d.name === value.name);
+
+		if (existsIdx === -1) {
+			vnodeDirectives.push(value);
+		} else if (modifier === OVERWRITE) {
+			vnodeDirectives.splice(existsIdx, 1, value);
+		} else if (modifier === MERGE) {
+			vnodeDirectives[existsIdx].value = merge(vnodeDirectives[existsIdx].value, value.value);
+		}
+	});
 }
 
 function findProp(attrs, prop) {
@@ -101,6 +141,27 @@ export function getPropsData(componentOptions, attrs) {
 	}
 
 	return propsData;
+}
+
+const getDirectiveModifier = modifiers => {
+	for (const modifier in modifiers) {
+		const hasModifier = MODIFIERS[modifier];
+		if (hasModifier) {
+			delete modifiers[modifier];
+			return hasModifier;
+		}
+	}
+
+	return FALLBACK;
+};
+
+export function parseDirectives(directives) {
+	if (directives) {
+		return directives.map(value => ({
+			value,
+			modifier: getDirectiveModifier(value.modifiers),
+		}));
+	}
 }
 
 export function parseModifiers(object) {
