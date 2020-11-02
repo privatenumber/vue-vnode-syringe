@@ -260,6 +260,6 @@ export default {
 - [vue-proxi](https://github.com/privatenumber/vue-proxi) - 💠 Tiny proxy component
 - [vue-subslot](https://github.com/privatenumber/vue-subslot) - 💍 Pick 'n choose what you want from a slot passed into your Vue component
 - [vue-pseudo-window](https://github.com/privatenumber/vue-pseudo-window) - 🖼 Declaratively interface window/document in your Vue template
-- [vue-vnode-syringe](https://github.com/privatenumber/vue-v) - render vNodes via component template
+- [vue-v](https://github.com/privatenumber/vue-v) - render vNodes via component template
 - [vue-frag](https://github.com/privatenumber/vue-frag) - 🤲 Directive to return multiple root elements
 
