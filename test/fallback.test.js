@@ -241,6 +241,84 @@ describe('fallback', () => {
 				expect(onClick).toHaveBeenCalledTimes(3);
 			});
 		});
+
+		test('apply v-show', () => {
+			const wrapper = mount({
+				template: `
+					<vnode-syringe v-show="false">
+						<div/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			});
+
+			expect(wrapper.html()).toBe('<div style="display: none;"></div>');
+		});
+
+		test('preserve existing v-show', () => {
+			const wrapper = mount({
+				template: `
+					<vnode-syringe v-show="true">
+						<div v-show="false"/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+				},
+			});
+
+			expect(wrapper.html()).toBe('<div style="display: none;"></div>');
+		});
+
+		test('apply custom directive', () => {
+			const title = {
+				inserted(element, {value}) {
+					element.setAttribute('title', value);
+				},
+			};
+
+			const wrapper = mount({
+				template: `
+					<vnode-syringe v-title="'hello world'">
+						<div/>
+					</vnode-syringe>
+				`,
+				directives: {
+					title,
+				},
+				components: {
+					VnodeSyringe,
+				},
+			});
+
+			expect(wrapper.html()).toBe('<div title="hello world"></div>');
+		});
+
+		test('preserve existing custom directive', () => {
+			const title = {
+				inserted(element, {value}) {
+					element.setAttribute('title', value);
+				},
+			};
+
+			const wrapper = mount({
+				template: `
+					<vnode-syringe v-title="'hello world'">
+						<div v-title="'goodbye world'" />
+					</vnode-syringe>
+				`,
+				directives: {
+					title,
+				},
+				components: {
+					VnodeSyringe,
+				},
+			});
+
+			expect(wrapper.html()).toBe('<div title="goodbye world"></div>');
+		});
 	});
 
 	describe('component', () => {
@@ -525,6 +603,88 @@ describe('fallback', () => {
 				expect(onClick).toHaveBeenCalledTimes(3);
 				expect(onNativeClick).toHaveBeenCalledTimes(6);
 			});
+		});
+
+		test('apply v-show', () => {
+			const wrapper = mount({
+				template: `
+					<vnode-syringe v-show="false">
+						<test-comp />
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					TestComp,
+				},
+			});
+
+			expect(wrapper.html()).toBe('<div style="display: none;"> </div>');
+		});
+
+		test('preserve existing v-show', () => {
+			const wrapper = mount({
+				template: `
+					<vnode-syringe v-show="false">
+						<test-comp v-show="true"/>
+					</vnode-syringe>
+				`,
+				components: {
+					VnodeSyringe,
+					TestComp,
+				},
+			});
+
+			expect(wrapper.html()).toBe('<div> </div>');
+		});
+
+		test('apply custom directive', () => {
+			const title = {
+				inserted(element, {value}) {
+					element.setAttribute('title', value);
+				},
+			};
+
+			const wrapper = mount({
+				template: `
+					<vnode-syringe v-title="'hello world'">
+						<test-comp />
+					</vnode-syringe>
+				`,
+				directives: {
+					title,
+				},
+				components: {
+					VnodeSyringe,
+					TestComp,
+				},
+			});
+
+			expect(wrapper.html()).toBe('<div title="hello world"> </div>');
+		});
+
+		test('preserve existing custom directive', () => {
+			const title = {
+				inserted(element, {value}) {
+					element.setAttribute('title', value);
+				},
+			};
+
+			const wrapper = mount({
+				template: `
+					<vnode-syringe v-title="'hello world'">
+						<test-comp v-title="'goodbye world'" />
+					</vnode-syringe>
+				`,
+				directives: {
+					title,
+				},
+				components: {
+					VnodeSyringe,
+					TestComp,
+				},
+			});
+
+			expect(wrapper.html()).toBe('<div title="goodbye world"> </div>');
 		});
 	});
 });
