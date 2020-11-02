@@ -111,6 +111,7 @@ For example, given the following `<slot>` content, both the class and event-list
 In this demo, the `class="button-group__button"` attribute is passed down to all of its `<slot>` content.
 
 _ButtonGroup.vue_
+
 ```html
 <template>
     <div class="button-group">
@@ -129,6 +130,7 @@ _ButtonGroup.vue_
 ```
 
 _Usage.vue_
+
 ```html
 <button-group>
     <button>Button 1</button> <!-- Will render with the `button-group__button` class -->
@@ -150,6 +152,7 @@ _Usage.vue_
 By default, vNode Syringe only adds the attribute/event-listener if it doesn't already exist. To merge with or overwrite the existing one, use the  `&` (merge) or `!` (overwrite) suffix.
 
 _ButtonGroup.vue_
+
 ```html
 <template>
     <div class="button-group">
@@ -184,6 +187,7 @@ export default {
 ```
 
 _Usage.vue_
+
 ```html
 <button-group disabled>
     <button
@@ -219,7 +223,7 @@ You can use [Subslot](https://github.com/privatenumber/vue-subslot) to pick out 
 
 For example, if you only want to accept `<button>`s in your slot:
 
-```vue
+```html
 <template>
     <div class="button-group">
         <vnode-syringe
